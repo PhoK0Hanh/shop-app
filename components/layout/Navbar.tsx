@@ -4,7 +4,7 @@ import { ShoppingCart, CircleUser } from "lucide-react";
 export default function Navbar() {
   return (
     <nav className="border-b">
-      <div className="flex items-center h-24 mx-auto px-10">
+      <div className="flex items-center h-24 max-w-7xl mx-auto px-4">
         {/* 1. Logo bên trái */}
         <Link href="/" className="text-4xl font-bold text-black">
           SHOP.CO
@@ -12,11 +12,14 @@ export default function Navbar() {
 
         {/* 2. Menu giữa/phải — ẩn trên mobile */}
         <div className="hidden md:flex gap-4 ml-10">
-          <Link href="/" className="hover:text-gray-500">
-            Home
-          </Link>
           <Link href="/shop" className="hover:text-gray-500">
             Shop
+          </Link>
+          <Link href="/" className="hover:text-gray-500">
+            New Arrivals
+          </Link>
+          <Link href="/" className="hover:text-gray-500">
+            On Sale
           </Link>
         </div>
 
