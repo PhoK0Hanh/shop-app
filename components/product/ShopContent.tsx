@@ -1,30 +1,40 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { Dialog } from "@base-ui/react/dialog";
 import { SlidersHorizontal, X } from "lucide-react";
 import type { Category, Product, Style } from "@/lib/mock-data";
 import ProductFilter from "@/components/product/ProductFilter";
 import ShopProducts from "@/components/product/ShopProducts";
-import { createDefaultFilters, filterProducts } from "@/lib/product-filters";
+import { filterProducts, parseFilterQuery, serializeFilterQuery } from "@/lib/product-filters";
 import type { ProductFilters } from "@/lib/product-filters";
 
 interface ShopContentProps {
   categories: Category[];
   styles: Style[];
   products: Product[];
+  filterQuery: string;
 }
 
-export default function ShopContent({ categories, styles, products }: ShopContentProps) {
-  const [appliedFilters, setAppliedFilters] = useState<ProductFilters>(createDefaultFilters);
-  const [draftFilters, setDraftFilters] = useState<ProductFilters>(createDefaultFilters);
+export default function ShopContent({ categories, styles, products, filterQuery }: ShopContentProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const appliedFilters = parseFilterQuery(filterQuery, categories, styles);
+  const [draftFilters, setDraftFilters] = useState<ProductFilters>(() => appliedFilters);
+  const [previousQuery, setPreviousQuery] = useState(filterQuery);
+  if (previousQuery !== filterQuery) {
+    setPreviousQuery(filterQuery);
+    setDraftFilters(appliedFilters);
+  }
   const [filterOpen, setFilterOpen] = useState(false);
   const [paginationResetKey, setPaginationResetKey] = useState(0);
   const title = categories.find((category) => category.id === appliedFilters.categoryId)?.name ?? "All";
   const filteredProducts = filterProducts(products, appliedFilters);
 
   function applyFilters(filters: ProductFilters) {
-    setAppliedFilters(filters);
+    const query = serializeFilterQuery(filters, filterQuery);
+    router.push(query ? `${pathname}?${query}` : pathname, { scroll: false });
     setPaginationResetKey((current) => current + 1);
     setFilterOpen(false);
   }
@@ -44,7 +54,7 @@ export default function ShopContent({ categories, styles, products }: ShopConten
       <ShopProducts
         products={filteredProducts}
         title={title}
-        paginationResetKey={paginationResetKey}
+        paginationResetKey={`${filterQuery}:${paginationResetKey}`}
         filterTrigger={
           <Dialog.Trigger className="flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium hover:bg-gray-100 lg:hidden">
             <SlidersHorizontal aria-hidden="true" size={18} />

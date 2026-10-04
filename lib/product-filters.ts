@@ -1,4 +1,4 @@
-import type { Product, Size } from "./mock-data";
+import type { Category, Product, Size, Style } from "./mock-data";
 
 export interface ProductFilters {
   categoryId: string | null;
@@ -17,6 +17,39 @@ export function createDefaultFilters(): ProductFilters {
     size: null,
     priceRange: [minFilterPrice, maxFilterPrice],
   };
+}
+
+export function parseFilterQuery(query: string, categories: Category[], styles: Style[]): ProductFilters {
+  const params = new URLSearchParams(query);
+  const filters = createDefaultFilters();
+  const category = params.get("category");
+  filters.categoryId = categories.find((item) => item.id.replace(/^cat-/, "") === category)?.id ?? null;
+  const styleSlugs = params.getAll("style").flatMap((value) => value.split(","));
+  filters.styleIds = styles.filter((item) => styleSlugs.includes(item.id.replace(/^style-/, ""))).map((item) => item.id);
+  const size = params.get("size")?.toUpperCase();
+  if (size && ["S", "M", "L", "XL", "XXL"].includes(size)) filters.size = size as Size;
+
+  function readPrice(key: string, fallback: number) {
+    const raw = params.get(key);
+    if (!raw?.trim()) return fallback;
+    const price = Number(raw);
+    return Number.isFinite(price) ? Math.min(maxFilterPrice, Math.max(minFilterPrice, price)) : fallback;
+  }
+  const min = readPrice("minPrice", minFilterPrice);
+  const max = readPrice("maxPrice", maxFilterPrice);
+  filters.priceRange = min <= max ? [min, max] : [minFilterPrice, maxFilterPrice];
+  return filters;
+}
+
+export function serializeFilterQuery(filters: ProductFilters, currentQuery = ""): string {
+  const params = new URLSearchParams(currentQuery);
+  for (const key of ["category", "style", "size", "minPrice", "maxPrice", "page"]) params.delete(key);
+  if (filters.categoryId) params.set("category", filters.categoryId.replace(/^cat-/, ""));
+  for (const id of filters.styleIds) params.append("style", id.replace(/^style-/, ""));
+  if (filters.size) params.set("size", filters.size);
+  if (filters.priceRange[0] !== minFilterPrice) params.set("minPrice", String(filters.priceRange[0]));
+  if (filters.priceRange[1] !== maxFilterPrice) params.set("maxPrice", String(filters.priceRange[1]));
+  return params.toString();
 }
 
 export function getSellingPrice(product: Product): number {

@@ -59,8 +59,8 @@ export default function Home() {
             NEW ARRIVALS
           </h2>
           <div className="grid w-full grid-cols-2 lg:grid-cols-4 gap-4">
-            {getNewArrivals(4).map((product) => (
-              <ProductCard key={product.id} product={product} />
+            {getNewArrivals(4).map((product, index) => (
+              <ProductCard key={product.id} product={product} loading={index === 0 ? "eager" : "lazy"} />
             ))}
           </div>
           <Link

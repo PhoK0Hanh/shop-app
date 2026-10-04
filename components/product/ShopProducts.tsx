@@ -59,7 +59,7 @@ function getPaginationItems(currentPage: number, pageCount: number) {
   return items;
 }
 
-export default function ShopProducts({ products, title = "All", paginationResetKey = 0, filterTrigger }: { products: Product[]; title?: string; paginationResetKey?: number; filterTrigger?: ReactNode }) {
+export default function ShopProducts({ products, title = "All", paginationResetKey = 0, filterTrigger }: { products: Product[]; title?: string; paginationResetKey?: number | string; filterTrigger?: ReactNode }) {
   const [sortOrder, setSortOrder] = useState<SortOrder>("newest");
   const [pageState, setPageState] = useState({ number: 1, resetKey: paginationResetKey });
   const page = pageState.resetKey === paginationResetKey ? pageState.number : 1;
@@ -142,8 +142,8 @@ export default function ShopProducts({ products, title = "All", paginationResetK
 
       {visibleProducts.length > 0 ? (
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
-          {visibleProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
+          {visibleProducts.map((product, index) => (
+            <ProductCard key={product.id} product={product} loading={index === 0 ? "eager" : "lazy"} />
           ))}
         </div>
       ) : (

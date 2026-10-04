@@ -4,9 +4,10 @@ import { Product, getDiscountPercent, formatPrice } from "@/lib/mock-data";
 
 interface ProductCardProps {
   product: Product;
+  loading?: "eager" | "lazy";
 }
 
-export default function ProductCard({ product }: ProductCardProps) {
+export default function ProductCard({ product, loading = "lazy" }: ProductCardProps) {
   const discount = getDiscountPercent(product.originalPrice, product.salePrice);
 
   return (
@@ -20,6 +21,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             src={product.images[0]}
             alt={product.name}
             fill
+            loading={loading}
             sizes="(min-width: 1280px) 295px, (min-width: 1024px) 25vw, 50vw"
             className="object-cover"
           />
