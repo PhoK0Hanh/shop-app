@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ShoppingCart, CircleUser } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 
 export default function Navbar() {
   return (
@@ -12,9 +13,15 @@ export default function Navbar() {
 
         {/* 2. Menu giữa/phải — ẩn trên mobile */}
         <div className="hidden md:flex gap-4 ml-10">
-          <Link href="/shop" className="hover:text-gray-500">
-            Shop
-          </Link>
+          <div className="group flex items-center">
+            <Link href="/shop" className="group-hover:text-gray-500">
+              Shop
+            </Link>
+            <ChevronDown
+              size={20}
+              className="group-hover:rotate-180 transition delay-150 duration-300"
+            />
+          </div>
           <Link href="/" className="hover:text-gray-500">
             New Arrivals
           </Link>

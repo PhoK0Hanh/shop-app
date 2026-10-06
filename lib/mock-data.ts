@@ -1,10 +1,12 @@
 // lib/mock-data.ts
 
 export type Size = "S" | "M" | "L" | "XL" | "XXL";
+export type Color = "Black" | "White" | "Gray" | "Navy" | "Blue" | "Beige" | "Green" | "Burgundy";
 
 export interface ProductVariant {
   id: string;
   size: Size;
+  color: Color;
   stock: number;
 }
 
@@ -49,10 +51,11 @@ export const styles: Style[] = [
 
 const allSizes: Size[] = ["S", "M", "L", "XL", "XXL"];
 
-function genVariants(stocks: number[]): ProductVariant[] {
+function genVariants(productId: string, color: Color, stocks: number[]): ProductVariant[] {
   return allSizes.map((size, i) => ({
-    id: `${size}-${Math.random().toString(36).slice(2, 8)}`,
+    id: `${productId}-${color.toLowerCase()}-${size}`,
     size,
+    color,
     stock: stocks[i] ?? 0,
   }));
 }
@@ -70,7 +73,12 @@ export const products: Product[] = [
     ],
     categoryId: "cat-tshirt",
     styleIds: ["style-casual", "style-gym"],
-    variants: genVariants([10, 25, 15, 5, 0]),
+    variants: [
+      ...genVariants("p1", "White", [10, 25, 15, 5, 0]),
+      ...genVariants("p1", "Black", [8, 18, 12, 6, 2]),
+      ...genVariants("p1", "Gray", [5, 14, 10, 4, 1]),
+      ...genVariants("p1", "Navy", [0, 12, 9, 5, 0]),
+    ],
     soldCount: 152,
     createdAt: "2026-08-01",
   },
@@ -86,7 +94,10 @@ export const products: Product[] = [
     ],
     categoryId: "cat-shirt",
     styleIds: ["style-formal", "style-party"],
-    variants: genVariants([8, 12, 10, 6, 2]),
+    variants: [
+      ...genVariants("p2", "Blue", [8, 12, 10, 6, 2]),
+      ...genVariants("p2", "White", [6, 15, 11, 4, 0]),
+    ],
     soldCount: 98,
     createdAt: "2026-08-02",
   },
@@ -101,7 +112,11 @@ export const products: Product[] = [
     ],
     categoryId: "cat-hoodie",
     styleIds: ["style-casual"],
-    variants: genVariants([5, 20, 18, 10, 4]),
+    variants: [
+      ...genVariants("p3", "Gray", [5, 20, 18, 10, 4]),
+      ...genVariants("p3", "Black", [8, 16, 14, 7, 3]),
+      ...genVariants("p3", "Green", [3, 10, 8, 0, 0]),
+    ],
     soldCount: 210,
     createdAt: "2026-08-03",
   },
@@ -116,7 +131,10 @@ export const products: Product[] = [
     ],
     categoryId: "cat-jeans",
     styleIds: ["style-casual", "style-formal"],
-    variants: genVariants([6, 14, 16, 8, 0]),
+    variants: [
+      ...genVariants("p4", "Navy", [6, 14, 16, 8, 0]),
+      ...genVariants("p4", "Blue", [4, 12, 10, 5, 0]),
+    ],
     soldCount: 134,
     createdAt: "2026-05-01",
   },
@@ -131,7 +149,7 @@ export const products: Product[] = [
     ],
     categoryId: "cat-shorts",
     styleIds: ["style-gym"],
-    variants: genVariants([12, 18, 14, 7, 3]),
+    variants: genVariants("p5", "Black", [12, 18, 14, 7, 3]),
     soldCount: 87,
     createdAt: "2026-08-12",
   },
@@ -147,7 +165,10 @@ export const products: Product[] = [
     ],
     categoryId: "cat-shirt",
     styleIds: ["style-party"],
-    variants: genVariants([4, 10, 9, 5, 1]),
+    variants: [
+      ...genVariants("p6", "Burgundy", [4, 10, 9, 5, 1]),
+      ...genVariants("p6", "Navy", [2, 8, 6, 3, 0]),
+    ],
     soldCount: 56,
     createdAt: "2026-02-01",
   },
@@ -162,7 +183,11 @@ export const products: Product[] = [
     ],
     categoryId: "cat-tshirt",
     styleIds: ["style-casual"],
-    variants: genVariants([15, 22, 20, 9, 5]),
+    variants: [
+      ...genVariants("p7", "Black", [15, 22, 20, 9, 5]),
+      ...genVariants("p7", "White", [10, 18, 16, 7, 3]),
+      ...genVariants("p7", "Beige", [5, 12, 9, 4, 0]),
+    ],
     soldCount: 178,
     createdAt: "2026-01-14",
   },
@@ -177,7 +202,10 @@ export const products: Product[] = [
     ],
     categoryId: "cat-jeans",
     styleIds: ["style-formal"],
-    variants: genVariants([7, 13, 11, 6, 2]),
+    variants: [
+      ...genVariants("p8", "Beige", [7, 13, 11, 6, 2]),
+      ...genVariants("p8", "Black", [5, 10, 12, 4, 1]),
+    ],
     soldCount: 62,
     createdAt: "2026-05-20",
   },
@@ -193,7 +221,12 @@ export const products: Product[] = [
     ],
     categoryId: "cat-tshirt",
     styleIds: ["style-casual"],
-    variants: genVariants([12, 20, 18, 8, 3]),
+    variants: [
+      ...genVariants("p9", "Green", [12, 20, 18, 8, 3]),
+      ...genVariants("p9", "White", [9, 16, 14, 6, 2]),
+      ...genVariants("p9", "Black", [10, 18, 15, 7, 4]),
+      ...genVariants("p9", "Beige", [4, 11, 8, 0, 0]),
+    ],
     soldCount: 120,
     createdAt: "2026-09-01",
   },
@@ -210,7 +243,7 @@ export const products: Product[] = [
     ],
     categoryId: "cat-shirt",
     styleIds: ["style-formal", "style-casual"],
-    variants: genVariants([6, 15, 14, 7, 2]),
+    variants: genVariants("p10", "White", [6, 15, 14, 7, 2]),
     soldCount: 85,
     createdAt: "2026-09-03",
   },
@@ -226,7 +259,11 @@ export const products: Product[] = [
     ],
     categoryId: "cat-hoodie",
     styleIds: ["style-casual", "style-gym"],
-    variants: genVariants([5, 16, 12, 6, 1]),
+    variants: [
+      ...genVariants("p11", "Navy", [5, 16, 12, 6, 1]),
+      ...genVariants("p11", "Gray", [4, 12, 10, 5, 2]),
+      ...genVariants("p11", "Burgundy", [0, 8, 7, 3, 0]),
+    ],
     soldCount: 165,
     createdAt: "2026-09-05",
   },
@@ -243,7 +280,10 @@ export const products: Product[] = [
     ],
     categoryId: "cat-jeans",
     styleIds: ["style-casual", "style-party"],
-    variants: genVariants([8, 14, 15, 9, 3]),
+    variants: [
+      ...genVariants("p12", "Blue", [8, 14, 15, 9, 3]),
+      ...genVariants("p12", "Black", [6, 11, 12, 7, 1]),
+    ],
     soldCount: 142,
     createdAt: "2026-09-07",
   },
@@ -256,10 +296,19 @@ export const products: Product[] = [
     images: [
       "https://picsum.photos/seed/p13a/600/800",
       "https://picsum.photos/seed/p13b/600/800",
+      "https://picsum.photos/seed/p13c/600/800",
+      "https://picsum.photos/seed/p13d/600/800",
+      "https://picsum.photos/seed/p13e/600/800",
+      "https://picsum.photos/seed/p13f/600/800",
     ],
     categoryId: "cat-shorts",
     styleIds: ["style-gym", "style-casual"],
-    variants: genVariants([10, 18, 16, 8, 4]),
+    variants: [
+      ...genVariants("p13", "Gray", [10, 18, 16, 8, 4]),
+      ...genVariants("p13", "Black", [8, 15, 12, 6, 2]),
+      ...genVariants("p13", "Navy", [6, 12, 10, 5, 1]),
+      ...genVariants("p13", "Green", [3, 9, 7, 0, 0]),
+    ],
     soldCount: 105,
     createdAt: "2026-09-09",
   },
