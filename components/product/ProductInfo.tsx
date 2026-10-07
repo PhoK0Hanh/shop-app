@@ -63,9 +63,6 @@ export default function ProductInfo({ product }: { product: Product }) {
         )}
       </div>
 
-      {/* Mô tả */}
-      <p className="leading-relaxed text-gray-600">{product.description}</p>
-
       {/* Chọn màu */}
       <div className="border-t pt-5">
         <h2 className="mb-3 font-medium">Choose Color</h2>

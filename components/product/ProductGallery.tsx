@@ -15,16 +15,18 @@ export default function ProductGallery({
   const [selectedImage, setSelectedImage] = useState(images[0]);
 
   return (
-    <div className="w-full max-w-100">
+    <div className="min-w-0 w-full max-w-100 lg:w-[48%] lg:max-w-none lg:shrink-0 ">
       {/* Ảnh lớn */}
-      <Image
-        src={selectedImage}
-        alt={productName}
-        width={400}
-        height={533}
-        preload
-        className="rounded-lg w-full h-auto"
-      />
+      <div className="flex w-full items-center justify-center overflow-hidden rounded-lg bg-[#F2F0F1]">
+        <Image
+          src={selectedImage}
+          alt={productName}
+          width={400}
+          height={533}
+          preload
+          className="w-[48%] h-auto object-contain object-center"
+        />
+      </div>
 
       {/* Dãy thumbnail */}
       <div className="relative flex gap-2 mt-4 overflow-x-auto scroll-smooth pb-2">
