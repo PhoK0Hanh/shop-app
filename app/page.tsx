@@ -60,7 +60,11 @@ export default function Home() {
           </h2>
           <div className="grid w-full grid-cols-2 lg:grid-cols-4 gap-4">
             {getNewArrivals(4).map((product, index) => (
-              <ProductCard key={product.id} product={product} loading={index === 0 ? "eager" : "lazy"} />
+              <ProductCard
+                key={product.id}
+                product={product}
+                loading={index === 0 ? "eager" : "lazy"}
+              />
             ))}
           </div>
           <Link
@@ -92,7 +96,10 @@ export default function Home() {
           </h2>
           <div className="flex w-full flex-col gap-4 px-6 lg:px-20">
             <div className="grid grid-cols-1 lg:grid-cols-[407fr_684fr] gap-4">
-              <Link href="/shop">
+              <Link
+                href="/shop?style=casual"
+                className="block overflow-hidden rounded-4xl transition duration-200 hover:-translate-y-1 hover:shadow-lg hover:brightness-95"
+              >
                 <Image
                   src="/images/casual.jpg"
                   alt="casual"
@@ -101,7 +108,10 @@ export default function Home() {
                   className="w-full h-auto rounded-4xl"
                 />
               </Link>
-              <Link href="/shop">
+              <Link
+                href="/shop?style=formal"
+                className="block overflow-hidden rounded-4xl transition duration-200 hover:-translate-y-1 hover:shadow-lg hover:brightness-95"
+              >
                 <Image
                   src="/images/formal2.jpg"
                   alt="formal"
@@ -119,7 +129,10 @@ export default function Home() {
               </Link>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-[684fr_407fr] gap-4">
-              <Link href="/shop">
+              <Link
+                href="/shop?style=party"
+                className="block overflow-hidden rounded-4xl transition duration-200 hover:-translate-y-1 hover:shadow-lg hover:brightness-95"
+              >
                 <Image
                   src="/images/party2.jpg"
                   alt="party"
@@ -135,7 +148,10 @@ export default function Home() {
                   className="hidden w-full h-auto rounded-4xl lg:block"
                 />
               </Link>
-              <Link href="/shop">
+              <Link
+                href="/shop?style=gym"
+                className="block overflow-hidden rounded-4xl transition duration-200 hover:-translate-y-1 hover:shadow-lg hover:brightness-95"
+              >
                 <Image
                   src="/images/gym.jpg"
                   alt="gym"

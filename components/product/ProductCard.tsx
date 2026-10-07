@@ -13,7 +13,7 @@ export default function ProductCard({ product, loading = "lazy" }: ProductCardPr
   return (
     <Link
       href={`/product/${product.id}`}
-      className="min-w-0 rounded-2xl border p-2 transition-shadow hover:shadow-xl"
+      className="min-w-0 rounded-2xl border p-2 transition duration-200 hover:-translate-y-1 hover:shadow-lg"
     >
       <div className="flex flex-col gap-2">
         <div className="relative aspect-square w-full overflow-hidden rounded-2xl">

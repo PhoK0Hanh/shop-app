@@ -119,7 +119,7 @@ export default function ShopProducts({ products, title = "All", paginationResetK
               }
             }}
           >
-            <SelectTrigger aria-labelledby="sort-label" className="min-w-40 bg-white">
+            <SelectTrigger aria-labelledby="sort-label" className="min-w-40 bg-white [&>svg]:transition-transform [&>svg]:duration-200 data-popup-open:[&>svg]:rotate-180">
               <span className="flex items-center gap-2">
                 <SortIcon aria-hidden="true" size={16} />
                 {selectedOption.label}
