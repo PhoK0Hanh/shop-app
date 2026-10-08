@@ -27,14 +27,15 @@ export function parseFilterQuery(
   const params = new URLSearchParams(query);
   const filters = createDefaultFilters();
   const category = params.get("category");
+  // URL dùng slug; trạng thái bộ lọc vẫn giữ ID để so khớp dữ liệu sản phẩm.
   filters.categoryId =
-    categories.find((item) => item.id.replace(/^cat-/, "") === category)?.id ??
+    categories.find((item) => item.slug === category)?.id ??
     null;
   const styleSlugs = params
     .getAll("style")
     .flatMap((value) => value.split(","));
   filters.styleIds = styles
-    .filter((item) => styleSlugs.includes(item.id.replace(/^style-/, "")))
+    .filter((item) => styleSlugs.includes(item.slug))
     .map((item) => item.id);
   const size = params.get("size")?.toUpperCase();
   if (size && ["S", "M", "L", "XL", "XXL"].includes(size))
@@ -57,6 +58,8 @@ export function parseFilterQuery(
 
 export function serializeFilterQuery(
   filters: ProductFilters,
+  categories: Category[],
+  styles: Style[],
   currentQuery = "",
 ): string {
   const params = new URLSearchParams(currentQuery);
@@ -69,10 +72,13 @@ export function serializeFilterQuery(
     "page",
   ])
     params.delete(key);
-  if (filters.categoryId)
-    params.set("category", filters.categoryId.replace(/^cat-/, ""));
-  for (const id of filters.styleIds)
-    params.append("style", id.replace(/^style-/, ""));
+  // Tra slug từ dữ liệu danh mục/style, không suy ra URL từ cấu trúc của ID.
+  const category = categories.find((item) => item.id === filters.categoryId);
+  if (category) params.set("category", category.slug);
+  for (const id of filters.styleIds) {
+    const style = styles.find((item) => item.id === id);
+    if (style) params.append("style", style.slug);
+  }
   if (filters.size) params.set("size", filters.size);
   if (filters.priceRange[0] !== minFilterPrice)
     params.set("minPrice", String(filters.priceRange[0]));

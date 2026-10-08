@@ -1,10 +1,15 @@
-import { getCategoryById, products } from "@/lib/mock-data";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import ProductGallery from "@/components/product/ProductGallery";
 import ProductInfo from "@/components/product/ProductInfo";
 import ProductCard from "@/components/product/ProductCard";
 import ProductDetailsTabs from "@/components/product/ProductDetailsTabs";
+import {
+  getProductById,
+  getSuggestedProducts,
+  getCategoryById,
+} from "@/lib/products";
+import { connection } from "next/server";
 
 export default async function ProductDetailPage({
   params,
@@ -12,20 +17,21 @@ export default async function ProductDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const product = products.find((p) => p.id === id);
+
+  // Đọc sản phẩm từ PostgreSQL khi người dùng truy cập trang.
+  await connection();
+  const product = await getProductById(id);
 
   if (!product) {
     notFound();
   }
 
-  const category = getCategoryById(product.categoryId);
+  const category = await getCategoryById(product.categoryId);
 
-  const suggestedProducts = products
-    .filter(
-      (item) =>
-        item.id !== product.id && item.categoryId === product.categoryId,
-    )
-    .slice(0, 4);
+  const suggestedProducts = await getSuggestedProducts(
+    product.categoryId,
+    product.id,
+  );
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 ">
@@ -47,7 +53,7 @@ export default async function ProductDetailPage({
               <li>/</li>
               <li>
                 <Link
-                  href={`/shop?category=${encodeURIComponent(category.id.replace(/^cat-/, ""))}`}
+                  href={`/shop?category=${encodeURIComponent(category.slug)}`}
                   className="hover:text-black"
                 >
                   {category.name}

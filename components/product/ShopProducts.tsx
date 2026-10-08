@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import type { ReactNode } from "react";
 import {
   ArrowLeft,
@@ -12,8 +11,8 @@ import {
   CalendarArrowUp,
   ChartNoAxesCombined,
 } from "lucide-react";
-import type { Product } from "@/lib/mock-data";
-import { getSellingPrice } from "@/lib/product-filters";
+import { shopPageSize } from "@/lib/shop-query";
+import type { ShopPageData, ShopSortOrder } from "@/lib/shop-query";
 import ProductCard from "@/components/product/ProductCard";
 import {
   Select,
@@ -22,7 +21,6 @@ import {
   SelectTrigger,
 } from "@/components/ui/select";
 
-const pageSize = 9;
 const sortOptions = [
   { value: "newest", label: "Mới nhất", icon: CalendarArrowDown },
   { value: "oldest", label: "Cũ nhất", icon: CalendarArrowUp },
@@ -32,7 +30,6 @@ const sortOptions = [
   { value: "bestselling", label: "Bán chạy nhất", icon: ChartNoAxesCombined },
 ] as const;
 
-type SortOrder = (typeof sortOptions)[number]["value"];
 
 function getPaginationItems(currentPage: number, pageCount: number) {
   if (pageCount <= 7) {
@@ -59,43 +56,19 @@ function getPaginationItems(currentPage: number, pageCount: number) {
   return items;
 }
 
-export default function ShopProducts({ products, title = "All", paginationResetKey = 0, filterTrigger }: { products: Product[]; title?: string; paginationResetKey?: number | string; filterTrigger?: ReactNode }) {
-  const [sortOrder, setSortOrder] = useState<SortOrder>("newest");
-  const [pageState, setPageState] = useState({ number: 1, resetKey: paginationResetKey });
-  const page = pageState.resetKey === paginationResetKey ? pageState.number : 1;
-  function setPage(number: number) {
-    setPageState({ number, resetKey: paginationResetKey });
-  }
+export default function ShopProducts({ shop, title = "All", pending, onSortChange, onPageChange, filterTrigger }: {
+  shop: ShopPageData;
+  title?: string;
+  pending: boolean;
+  onSortChange: (sort: ShopSortOrder) => void;
+  onPageChange: (page: number) => void;
+  filterTrigger?: ReactNode;
+}) {
+  // Server đã lọc, sắp xếp và chia trang; component chỉ hiển thị trang được trả về.
+  const { products: visibleProducts, total, page: currentPage, pageCount, sort: sortOrder } = shop;
   const selectedOption = sortOptions.find((option) => option.value === sortOrder)!;
   const SortIcon = selectedOption.icon;
-  const sortedProducts = [...products].sort((a, b) => {
-    let difference = 0;
-    switch (sortOrder) {
-      case "newest":
-        difference = b.createdAt.localeCompare(a.createdAt);
-        break;
-      case "oldest":
-        difference = a.createdAt.localeCompare(b.createdAt);
-        break;
-      case "price-asc":
-        difference = getSellingPrice(a) - getSellingPrice(b);
-        break;
-      case "price-desc":
-        difference = getSellingPrice(b) - getSellingPrice(a);
-        break;
-      case "name":
-        difference = a.name.localeCompare(b.name, "vi", { sensitivity: "base", numeric: true });
-        break;
-      case "bestselling":
-        difference = b.soldCount - a.soldCount;
-        break;
-    }
-    return difference || a.id.localeCompare(b.id, "en", { numeric: true });
-  });
-  const pageCount = Math.max(1, Math.ceil(sortedProducts.length / pageSize));
-  const currentPage = Math.min(page, pageCount);
-  const offset = (currentPage - 1) * pageSize;
-  const visibleProducts = sortedProducts.slice(offset, offset + pageSize);
+  const offset = (currentPage - 1) * shopPageSize;
 
   return (
     <section className="min-w-0 flex-1 space-y-6" aria-labelledby="shop-title">
@@ -106,16 +79,16 @@ export default function ShopProducts({ products, title = "All", paginationResetK
         </div>
         <div className="flex flex-wrap items-center gap-3 text-sm">
           <p className="text-gray-500" aria-live="polite">
-            {products.length === 0 ? "0 sản phẩm" : `${offset + 1}–${offset + visibleProducts.length} / ${products.length} sản phẩm`}
+            {pending ? "Đang tải..." : total === 0 ? "0 sản phẩm" : `${offset + 1}–${offset + visibleProducts.length} / ${total} sản phẩm`}
           </p>
           <span id="sort-label" className="text-gray-500">Sắp xếp:</span>
           <Select
+            disabled={pending}
             value={sortOrder}
             onValueChange={(value) => {
               const option = sortOptions.find((item) => item.value === value);
               if (option) {
-                setSortOrder(option.value);
-                setPage(1);
+                onSortChange(option.value);
               }
             }}
           >
@@ -154,8 +127,8 @@ export default function ShopProducts({ products, title = "All", paginationResetK
         <nav aria-label="Phân trang sản phẩm" className="flex items-center justify-between gap-2 border-t pt-5">
           <button
             type="button"
-            disabled={currentPage === 1}
-            onClick={() => setPage(currentPage - 1)}
+            disabled={pending || currentPage === 1}
+            onClick={() => onPageChange(currentPage - 1)}
             className="flex items-center gap-2 rounded-xl border px-3 py-2 text-sm hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
           >
             <ArrowLeft aria-hidden="true" size={16} />
@@ -174,7 +147,8 @@ export default function ShopProducts({ products, title = "All", paginationResetK
                 type="button"
                 aria-label={`Trang ${number}`}
                 aria-current={number === currentPage ? "page" : undefined}
-                onClick={() => setPage(number)}
+                disabled={pending || number === currentPage}
+                onClick={() => onPageChange(number)}
                 className={`size-9 rounded-lg text-sm ${number === currentPage ? "bg-black text-white" : "hover:bg-gray-100"}`}
               >
                 {number}
@@ -184,8 +158,8 @@ export default function ShopProducts({ products, title = "All", paginationResetK
           </div>
           <button
             type="button"
-            disabled={currentPage === pageCount}
-            onClick={() => setPage(currentPage + 1)}
+            disabled={pending || currentPage === pageCount}
+            onClick={() => onPageChange(currentPage + 1)}
             className="flex items-center gap-2 rounded-xl border px-3 py-2 text-sm hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
           >
             Sau

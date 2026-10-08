@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
+import { useCart } from "@/lib/cart-store";
 import { formatPrice, getDiscountPercent } from "@/lib/mock-data";
 import type { Color, Product, Size } from "@/lib/mock-data";
 
@@ -16,6 +18,8 @@ const colorHex: Record<Color, string> = {
 };
 
 export default function ProductInfo({ product }: { product: Product }) {
+  const { addItem } = useCart();
+  const [cartMessage, setCartMessage] = useState("");
   const colors = [...new Set(product.variants.map((variant) => variant.color))];
   const [selectedColor, setSelectedColor] = useState<Color | null>(
     product.variants.find((variant) => variant.stock > 0)?.color ??
@@ -162,6 +166,14 @@ export default function ProductInfo({ product }: { product: Product }) {
           <button
             type="button"
             disabled={!canAddToCart}
+            onClick={() => {
+              if (!selectedVariant) return;
+              // Thêm theo biến thể đang chọn và báo số lượng thực tế được thêm.
+              const added = addItem(selectedVariant.id, quantity);
+              setCartMessage(added > 0
+                ? `Đã thêm ${added} sản phẩm (${selectedVariant.color}, ${selectedVariant.size}) vào giỏ hàng.${added < quantity ? " Đã đạt giới hạn tồn kho." : ""}`
+                : "Biến thể này đã đạt giới hạn tồn kho trong giỏ hàng.");
+            }}
             className="h-12 min-w-0 flex-1 rounded-full bg-black px-3 text-sm font-medium text-white hover:bg-[#383838] disabled:cursor-not-allowed disabled:opacity-40 sm:text-base"
           >
             Add to Cart
@@ -172,6 +184,7 @@ export default function ProductInfo({ product }: { product: Product }) {
             ? `${availableStock} sản phẩm có sẵn`
             : "Chọn size để thay đổi số lượng."}
         </p>
+        {cartMessage && <div className="mt-3 rounded-xl bg-gray-100 p-3 text-sm"><p>{cartMessage}</p><Link href="/cart" className="mt-1 inline-block font-semibold underline">Xem giỏ hàng</Link></div>}
       </div>
     </div>
   );

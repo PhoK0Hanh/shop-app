@@ -8,8 +8,9 @@ export default function Footer() {
         <div className="grid grid-cols-2 lg:grid-cols-6 gap-8">
           <div className="col-span-2">
             <div className="text-4xl font-bold text-black">SHOP.CO</div>
+            {/* Dùng HTML entity cho dấu nháy đơn trong nội dung JSX để đạt quy tắc lint. */}
             <div className="max-w-xs">
-              We have clothes that suits your style and which you're proud to
+              We have clothes that suits your style and which you&apos;re proud to
               wear. From women to men
             </div>
             <div className="flex gap-4 mt-4">

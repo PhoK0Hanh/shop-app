@@ -27,26 +27,28 @@ export interface Product {
 export interface Category {
   id: string;
   name: string;
+  slug: string; // Giá trị dùng trong URL, độc lập với ID.
 }
 
 export interface Style {
   id: string;
   name: string;
+  slug: string;
 }
 
 export const categories: Category[] = [
-  { id: "cat-tshirt", name: "T-shirts" },
-  { id: "cat-shorts", name: "Shorts" },
-  { id: "cat-shirt", name: "Shirts" },
-  { id: "cat-hoodie", name: "Hoodie" },
-  { id: "cat-jeans", name: "Jeans" },
+  { id: "cat-tshirt", name: "T-shirts", slug: "tshirt" },
+  { id: "cat-shorts", name: "Shorts", slug: "shorts" },
+  { id: "cat-shirt", name: "Shirts", slug: "shirt" },
+  { id: "cat-hoodie", name: "Hoodie", slug: "hoodie" },
+  { id: "cat-jeans", name: "Jeans", slug: "jeans" },
 ];
 
 export const styles: Style[] = [
-  { id: "style-casual", name: "Casual" },
-  { id: "style-formal", name: "Formal" },
-  { id: "style-party", name: "Party" },
-  { id: "style-gym", name: "Gym" },
+  { id: "style-casual", name: "Casual", slug: "casual" },
+  { id: "style-formal", name: "Formal", slug: "formal" },
+  { id: "style-party", name: "Party", slug: "party" },
+  { id: "style-gym", name: "Gym", slug: "gym" },
 ];
 
 const allSizes: Size[] = ["S", "M", "L", "XL", "XXL"];

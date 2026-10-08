@@ -2,10 +2,14 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ShoppingCart, CircleUser, ChevronDown, TextAlignJustify, X } from "lucide-react";
+import { ShoppingCart, ChevronDown, TextAlignJustify, X } from "lucide-react";
 import { categories, styles } from "@/lib/mock-data";
+import { useCart } from "@/lib/cart-store";
+import AccountMenu from "@/components/auth/AccountMenu";
 
 export default function Navbar() {
+  // Tổng số lượng được đồng bộ với trang chi tiết và giỏ hàng.
+  const { totalQuantity } = useCart();
   const [menuOpen, setMenuOpen] = useState(false);
   const [shopOpen, setShopOpen] = useState(false);
 
@@ -91,12 +95,12 @@ export default function Navbar() {
 
         {/* 3. Icon giỏ hàng bên phải */}
         <div className="ml-auto flex shrink-0 items-center gap-1 md:gap-2">
-          <Link href="/cart" onClick={() => setMenuOpen(false)} className="flex size-10 items-center justify-center rounded-full transition-colors hover:bg-gray-100">
+          <Link href="/cart" title="Giỏ hàng" onClick={() => setMenuOpen(false)} className="relative flex size-10 items-center justify-center rounded-full transition-colors hover:bg-gray-100">
             <ShoppingCart size={22} />
+            {totalQuantity > 0 && <span className="absolute -right-1 -top-1 flex min-w-5 items-center justify-center rounded-full bg-black px-1 text-[10px] leading-5 text-white">{totalQuantity > 99 ? "99+" : totalQuantity}</span>}
           </Link>
-          <Link href="/login" onClick={() => setMenuOpen(false)} className="flex size-10 items-center justify-center rounded-full transition-colors hover:bg-gray-100">
-            <CircleUser size={22} />
-          </Link>
+          {/* Đồng bộ tài khoản Firebase và đóng menu mobile khi mở mục tài khoản. */}
+          <AccountMenu onOpen={() => setMenuOpen(false)} />
         </div>
       </div>
       {menuOpen && (

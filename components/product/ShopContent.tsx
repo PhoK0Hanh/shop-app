@@ -1,14 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Dialog } from "@base-ui/react/dialog";
 import { SlidersHorizontal, X } from "lucide-react";
-import type { Category, Product, Style } from "@/lib/mock-data";
+import type { Category, Style } from "@/lib/mock-data";
+import type { ShopPageData, ShopSortOrder } from "@/lib/shop-query";
 import ProductFilter from "@/components/product/ProductFilter";
 import ShopProducts from "@/components/product/ShopProducts";
 import {
-  filterProducts,
   parseFilterQuery,
   serializeFilterQuery,
 } from "@/lib/product-filters";
@@ -17,18 +17,19 @@ import type { ProductFilters } from "@/lib/product-filters";
 interface ShopContentProps {
   categories: Category[];
   styles: Style[];
-  products: Product[];
+  shop: ShopPageData;
   filterQuery: string;
 }
 
 export default function ShopContent({
   categories,
   styles,
-  products,
+  shop,
   filterQuery,
 }: ShopContentProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const [pending, startTransition] = useTransition();
   const appliedFilters = parseFilterQuery(filterQuery, categories, styles);
   const [draftFilters, setDraftFilters] = useState<ProductFilters>(
     () => appliedFilters,
@@ -39,17 +40,35 @@ export default function ShopContent({
     setDraftFilters(appliedFilters);
   }
   const [filterOpen, setFilterOpen] = useState(false);
-  const [paginationResetKey, setPaginationResetKey] = useState(0);
   const title =
     categories.find((category) => category.id === appliedFilters.categoryId)
       ?.name ?? "All";
-  const filteredProducts = filterProducts(products, appliedFilters);
+
+  // Thay URL để server truy vấn lại; trạng thái hiển thị lấy từ kết quả server.
+  function navigate(query: string) {
+    startTransition(() => router.push(query ? `${pathname}?${query}` : pathname, { scroll: false }));
+  }
 
   function applyFilters(filters: ProductFilters) {
-    const query = serializeFilterQuery(filters, filterQuery);
-    router.push(query ? `${pathname}?${query}` : pathname, { scroll: false });
-    setPaginationResetKey((current) => current + 1);
+    // Dùng slug từ dữ liệu server để URL luôn khớp với các lựa chọn trong bộ lọc.
+    const query = serializeFilterQuery(filters, categories, styles, filterQuery);
+    navigate(query);
     setFilterOpen(false);
+  }
+
+  function changeSort(sort: ShopSortOrder) {
+    const query = new URLSearchParams(filterQuery);
+    if (sort === "newest") query.delete("sort");
+    else query.set("sort", sort);
+    query.delete("page"); // Đổi sort luôn quay về trang đầu.
+    navigate(query.toString());
+  }
+
+  function changePage(page: number) {
+    const query = new URLSearchParams(filterQuery);
+    if (page === 1) query.delete("page");
+    else query.set("page", String(page));
+    navigate(query.toString());
   }
 
   return (
@@ -68,9 +87,11 @@ export default function ShopContent({
           />
         </aside>
         <ShopProducts
-          products={filteredProducts}
+          shop={shop}
           title={title}
-          paginationResetKey={`${filterQuery}:${paginationResetKey}`}
+          pending={pending}
+          onSortChange={changeSort}
+          onPageChange={changePage}
           filterTrigger={
             <Dialog.Trigger className="flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium hover:bg-gray-100 lg:hidden">
               <SlidersHorizontal aria-hidden="true" size={18} />
