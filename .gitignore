@@ -32,6 +32,8 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+# Chỉ chia sẻ mẫu cấu hình không chứa thông tin đăng nhập thật.
+!.env.example
 
 # vercel
 .vercel
