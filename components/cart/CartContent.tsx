@@ -4,11 +4,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
 import { useCart } from "@/lib/cart-store";
-import { findCartVariant } from "@/lib/cart";
-import { formatPrice, getDiscountPercent } from "@/lib/mock-data";
+import ApiStatus from "@/components/ApiStatus";
+import { formatPrice, getDiscountPercent } from "@/lib/catalog";
 
 export default function CartContent() {
-  const { items, ready, totalQuantity, updateQuantity, removeItem, clearCart } = useCart();
+  // API lỗi không được hiển thị nhầm thành giỏ trống hoặc xóa dữ liệu đã lưu.
+  const { items, ready, error, retry, findCartVariant, totalQuantity, updateQuantity, removeItem, clearCart } = useCart();
   const lines = items.flatMap((item) => {
     const match = findCartVariant(item.variantId);
     if (!match) return [];
@@ -20,7 +21,7 @@ export default function CartContent() {
   const subtotal = lines.reduce((sum, line) => sum + line.product.originalPrice * line.quantity, 0);
   const total = lines.reduce((sum, line) => sum + line.price * line.quantity, 0);
 
-  if (!ready) return <p className="py-16 text-center text-gray-500">Đang tải giỏ hàng...</p>;
+  if (!ready) return <ApiStatus error={error} retry={retry} />;
   if (lines.length === 0) return (
     <div className="rounded-3xl border border-gray-200 px-6 py-16 text-center">
       <ShoppingBag size={48} className="mx-auto mb-5 text-gray-400" />

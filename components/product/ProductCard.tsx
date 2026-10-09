@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Product, getDiscountPercent, formatPrice } from "@/lib/mock-data";
+import { Product, getDiscountPercent, formatPrice } from "@/lib/catalog";
 
 interface ProductCardProps {
   product: Product;

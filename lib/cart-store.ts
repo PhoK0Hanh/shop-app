@@ -3,6 +3,8 @@
 import { useMemo, useSyncExternalStore } from "react";
 import { findCartVariant, normalizeCart, readCart } from "./cart";
 import type { CartItem } from "./cart";
+import type { Product } from "./catalog";
+import { useApi } from "./use-api";
 
 const storageKey = "shop-app-cart-v1";
 let memorySnapshot = "[]";
@@ -33,8 +35,8 @@ function subscribe(listener: () => void) {
   };
 }
 
-function saveCart(items: CartItem[]) {
-  memorySnapshot = JSON.stringify(normalizeCart(items));
+function saveCart(items: CartItem[], products: Product[]) {
+  memorySnapshot = JSON.stringify(normalizeCart(items, products));
   try {
     window.localStorage.setItem(storageKey, memorySnapshot);
   } catch {
@@ -45,33 +47,41 @@ function saveCart(items: CartItem[]) {
 }
 
 export function useCart() {
+  // Giỏ khách vẫn lưu lựa chọn cục bộ; giá và tồn kho được tải từ PostgreSQL qua API.
+  const catalog = useApi<Product[]>("/products/catalog");
   // Snapshot server luôn rỗng để HTML ban đầu khớp; React đọc localStorage sau hydration.
   const snapshot = useSyncExternalStore(subscribe, getSnapshot, () => "[]");
-  const ready = useSyncExternalStore(subscribe, () => true, () => false);
-  const items = useMemo(() => readCart(snapshot), [snapshot]);
+  const hydrated = useSyncExternalStore(subscribe, () => true, () => false);
+  const ready = hydrated && Boolean(catalog.data);
+  const products = catalog.data;
+  const items = useMemo(() => readCart(snapshot, products ?? []), [snapshot, products]);
 
   function addItem(variantId: string, quantity: number) {
-    const match = findCartVariant(variantId);
+    if (!products || !ready) return 0;
+    const match = findCartVariant(variantId, products);
     if (!match || !Number.isSafeInteger(quantity) || quantity <= 0) return 0;
-    const current = readCart(getSnapshot());
+    const current = readCart(getSnapshot(), products);
     const existing = current.find((item) => item.variantId === variantId);
     const added = Math.max(0, Math.min(quantity, match.variant.stock - (existing?.quantity ?? 0)));
     if (added === 0) return 0;
     // Cùng variantId thì cộng số lượng; khác màu hoặc size tạo một dòng riêng.
     saveCart(existing
       ? current.map((item) => item.variantId === variantId ? { ...item, quantity: item.quantity + added } : item)
-      : [...current, { variantId, quantity: added }]);
+      : [...current, { variantId, quantity: added }], products);
     return added;
   }
 
   function updateQuantity(variantId: string, quantity: number) {
-    if (!Number.isSafeInteger(quantity) || quantity < 1) return;
-    saveCart(readCart(getSnapshot()).map((item) => item.variantId === variantId ? { ...item, quantity } : item));
+    if (!products || !Number.isSafeInteger(quantity) || quantity < 1) return;
+    saveCart(readCart(getSnapshot(), products).map((item) => item.variantId === variantId ? { ...item, quantity } : item), products);
   }
 
   function removeItem(variantId: string) {
-    saveCart(readCart(getSnapshot()).filter((item) => item.variantId !== variantId));
+    if (products) saveCart(readCart(getSnapshot(), products).filter((item) => item.variantId !== variantId), products);
   }
 
-  return { items, ready, totalQuantity: items.reduce((sum, item) => sum + item.quantity, 0), addItem, updateQuantity, removeItem, clearCart: () => saveCart([]) };
+  return { items, ready, error: catalog.error, retry: catalog.retry,
+    findCartVariant: (id: string) => findCartVariant(id, products ?? []),
+    totalQuantity: items.reduce((sum, item) => sum + item.quantity, 0), addItem, updateQuantity, removeItem,
+    clearCart: () => { if (products) saveCart([], products); } };
 }

@@ -2,6 +2,7 @@ import "server-only";
 
 import { cookies } from "next/headers";
 import { getAdminAuth } from "@/lib/firebase/admin";
+import { getUserByFirebaseUid } from "@/lib/users";
 
 export const SESSION_COOKIE = "shop_session";
 export const SESSION_MAX_AGE = 60 * 60 * 24 * 5;
@@ -34,10 +35,10 @@ export async function getSessionUser() {
   try {
     // Chỉ tin cookie được Admin SDK xác thực; kiểm tra cả việc khóa/thu hồi tài khoản.
     const claims = await getAdminAuth().verifySessionCookie(token, true);
+    const profile = await getUserByFirebaseUid(claims.uid);
+    if (!profile) return null;
     return {
-      uid: claims.uid,
-      email: claims.email ?? null,
-      name: typeof claims.name === "string" ? claims.name : null,
+      ...profile,
       emailVerified: claims.email_verified === true,
     };
   } catch (error) {

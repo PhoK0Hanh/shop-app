@@ -1,7 +1,7 @@
 import "server-only";
 
 import { pool } from "@/lib/db";
-import type { Category, Product, ProductVariant, Style } from "@/lib/mock-data";
+import type { Category, Product, ProductVariant, Style } from "@/lib/catalog";
 import type { ProductFilters } from "@/lib/product-filters";
 import { shopPageSize } from "@/lib/shop-query";
 import type { ShopPageData, ShopSortOrder } from "@/lib/shop-query";

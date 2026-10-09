@@ -2,7 +2,7 @@
 
 import { Slider } from "@base-ui/react/slider";
 import { SlidersHorizontal } from "lucide-react";
-import type { Category, Size, Style } from "@/lib/mock-data";
+import type { Category, Size, Style } from "@/lib/catalog";
 import { createDefaultFilters, minFilterPrice, maxFilterPrice } from "@/lib/product-filters";
 import type { ProductFilters } from "@/lib/product-filters";
 

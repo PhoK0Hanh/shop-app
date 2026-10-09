@@ -1,9 +1,15 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import ProductCard from "@/components/product/ProductCard";
-import { getNewArrivals, getTopSellers } from "@/lib/mock-data";
+import { useApi } from "@/lib/use-api";
+import type { Product } from "@/lib/catalog";
+import ApiStatus from "@/components/ApiStatus";
 
 export default function Home() {
+  // Hero giữ nguyên; hai nhóm sản phẩm lấy từ PostgreSQL qua API.
+  const featured = useApi<{newArrivals: Product[]; topSellers: Product[]}>("/home");
   return (
     <div className="flex w-full flex-col items-center">
       <div className="w-full bg-[#F2F0F1]">
@@ -58,8 +64,9 @@ export default function Home() {
           <h2 className="text-center font-bold text-3xl lg:text-5xl">
             NEW ARRIVALS
           </h2>
+          {!featured.data && <ApiStatus error={featured.error} retry={featured.retry} />}
           <div className="grid w-full grid-cols-2 lg:grid-cols-4 gap-4">
-            {getNewArrivals(4).map((product, index) => (
+            {(featured.data?.newArrivals ?? []).map((product, index) => (
               <ProductCard
                 key={product.id}
                 product={product}
@@ -78,8 +85,9 @@ export default function Home() {
           <h2 className="text-center font-bold text-3xl lg:text-5xl">
             TOP SELLING
           </h2>
+          {!featured.data && <ApiStatus error={featured.error} retry={featured.retry} />}
           <div className="grid w-full grid-cols-2 lg:grid-cols-4 gap-4">
-            {getTopSellers(4).map((product) => (
+            {(featured.data?.topSellers ?? []).map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>

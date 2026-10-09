@@ -3,8 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useCart } from "@/lib/cart-store";
-import { formatPrice, getDiscountPercent } from "@/lib/mock-data";
-import type { Color, Product, Size } from "@/lib/mock-data";
+import { formatPrice, getDiscountPercent } from "@/lib/catalog";
+import type { Color, Product, Size } from "@/lib/catalog";
 
 const colorHex: Record<Color, string> = {
   Black: "#000000",
@@ -18,7 +18,8 @@ const colorHex: Record<Color, string> = {
 };
 
 export default function ProductInfo({ product }: { product: Product }) {
-  const { addItem } = useCart();
+  // Đợi catalog API sẵn sàng trước khi thêm biến thể vào giỏ khách.
+  const { addItem, ready } = useCart();
   const [cartMessage, setCartMessage] = useState("");
   const colors = [...new Set(product.variants.map((variant) => variant.color))];
   const [selectedColor, setSelectedColor] = useState<Color | null>(
@@ -36,7 +37,7 @@ export default function ProductInfo({ product }: { product: Product }) {
   );
   const availableStock = selectedVariant?.stock ?? 0;
   const canAddToCart =
-    availableStock > 0 && quantity >= 1 && quantity <= availableStock;
+    ready && availableStock > 0 && quantity >= 1 && quantity <= availableStock;
 
   const discount = getDiscountPercent(product.originalPrice, product.salePrice);
 

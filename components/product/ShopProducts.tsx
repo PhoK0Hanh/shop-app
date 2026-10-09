@@ -64,7 +64,7 @@ export default function ShopProducts({ shop, title = "All", pending, onSortChang
   onPageChange: (page: number) => void;
   filterTrigger?: ReactNode;
 }) {
-  // Server đã lọc, sắp xếp và chia trang; component chỉ hiển thị trang được trả về.
+  // API đã lọc, sắp xếp và chia trang; component chỉ hiển thị JSON được trả về.
   const { products: visibleProducts, total, page: currentPage, pageCount, sort: sortOrder } = shop;
   const selectedOption = sortOptions.find((option) => option.value === sortOrder)!;
   const SortIcon = selectedOption.icon;

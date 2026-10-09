@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { FirebaseAdminConfigError, getAdminAuth } from "@/lib/firebase/admin";
+import { syncFirebaseUser, UserProfileError } from "@/lib/users";
 import {
   getSessionUser,
   isInvalidFirebaseToken,
@@ -20,6 +21,9 @@ function sameOrigin(request: NextRequest) {
 }
 
 function serverError(error: unknown) {
+  if (error instanceof UserProfileError) {
+    return json({ error: error.message, code: error.code }, error.status);
+  }
   return error instanceof FirebaseAdminConfigError
     ? json({ error: "Server chưa được cấu hình Firebase Admin." }, 503)
     : json({ error: "Không thể xử lý phiên đăng nhập. Vui lòng thử lại." }, 500);
@@ -70,6 +74,8 @@ export async function POST(request: NextRequest) {
     if (!Number.isFinite(claims.auth_time) || now - claims.auth_time > 300 || claims.auth_time > now + 30) {
       return json({ error: "Vui lòng đăng nhập lại để tạo phiên." }, 401);
     }
+    // Chỉ cấp cookie sau khi hồ sơ đã được đồng bộ và trạng thái tài khoản được kiểm tra.
+    await syncFirebaseUser(claims);
     const session = await adminAuth.createSessionCookie(idToken, { expiresIn: SESSION_MAX_AGE * 1000 });
     const response = json({ success: true });
     response.cookies.set(SESSION_COOKIE, session, { ...sessionCookieOptions, maxAge: SESSION_MAX_AGE });

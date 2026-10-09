@@ -1,4 +1,4 @@
-import type { Product } from "./mock-data";
+import type { Product } from "./catalog";
 
 export const shopPageSize = 9;
 export const shopSortOrders = ["newest", "oldest", "price-asc", "price-desc", "name", "bestselling"] as const;

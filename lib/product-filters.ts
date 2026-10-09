@@ -1,4 +1,4 @@
-import type { Category, Product, Size, Style } from "./mock-data";
+import type { Category, Product, Size, Style } from "./catalog";
 
 export interface ProductFilters {
   categoryId: string | null;

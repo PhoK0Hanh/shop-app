@@ -3,11 +3,16 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ShoppingCart, ChevronDown, TextAlignJustify, X } from "lucide-react";
-import { categories, styles } from "@/lib/mock-data";
+import type { Category, Style } from "@/lib/catalog";
+import { useApi } from "@/lib/use-api";
 import { useCart } from "@/lib/cart-store";
 import AccountMenu from "@/components/auth/AccountMenu";
 
 export default function Navbar() {
+  // Lựa chọn dropdown đọc từ API, dùng slug thực của database.
+  const catalog = useApi<{categories: Category[]; styles: Style[]}>("/catalog");
+  const categories = catalog.data?.categories ?? [];
+  const styles = catalog.data?.styles ?? [];
   // Tổng số lượng được đồng bộ với trang chi tiết và giỏ hàng.
   const { totalQuantity } = useCart();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -56,13 +61,15 @@ export default function Navbar() {
                 <Link href="/shop" className="mb-3 block rounded-lg px-3 py-2.5 font-semibold transition-colors duration-200 hover:bg-gray-100">
                   Tất cả sản phẩm
                 </Link>
+                {catalog.loading && <p className="px-3 py-2 text-gray-500">Đang tải danh mục...</p>}
+                {catalog.error && <button type="button" onClick={catalog.retry} className="px-3 py-2 text-sm text-red-600">Tải lại danh mục</button>}
                 <div className="grid grid-cols-2 gap-4 border-t pt-3">
                   <div>
                     <h3 className="mb-2 px-3 text-sm font-bold">Các loại</h3>
                     {categories.map((category) => (
                       <Link
                         key={category.id}
-                        href={`/shop?category=${encodeURIComponent(category.id.replace(/^cat-/, ""))}`}
+                        href={`/shop?category=${encodeURIComponent(category.slug)}`}
                         className="block rounded-lg px-3 py-2 text-sm transition-colors duration-200 hover:bg-gray-100"
                       >
                         {category.name}
@@ -74,7 +81,7 @@ export default function Navbar() {
                     {styles.map((style) => (
                       <Link
                         key={style.id}
-                        href={`/shop?style=${encodeURIComponent(style.id.replace(/^style-/, ""))}`}
+                        href={`/shop?style=${encodeURIComponent(style.slug)}`}
                         className="block rounded-lg px-3 py-2 text-sm transition-colors duration-200 hover:bg-gray-100"
                       >
                         {style.name}

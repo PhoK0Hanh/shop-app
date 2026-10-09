@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Dialog } from "@base-ui/react/dialog";
 import { SlidersHorizontal, X } from "lucide-react";
-import type { Category, Style } from "@/lib/mock-data";
+import type { Category, Style } from "@/lib/catalog";
 import type { ShopPageData, ShopSortOrder } from "@/lib/shop-query";
 import ProductFilter from "@/components/product/ProductFilter";
 import ShopProducts from "@/components/product/ShopProducts";
@@ -44,7 +44,7 @@ export default function ShopContent({
     categories.find((category) => category.id === appliedFilters.categoryId)
       ?.name ?? "All";
 
-  // Thay URL để server truy vấn lại; trạng thái hiển thị lấy từ kết quả server.
+  // Thay URL để ShopLoader gọi lại REST API bằng Axios.
   function navigate(query: string) {
     startTransition(() => router.push(query ? `${pathname}?${query}` : pathname, { scroll: false }));
   }
