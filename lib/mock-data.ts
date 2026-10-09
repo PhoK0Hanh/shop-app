@@ -2,18 +2,18 @@
 import type { Size, Color, Product, ProductVariant, Category, Style } from "./catalog";
 export * from "./catalog";
 export const categories: Category[] = [
-  { id: "cat-tshirt", name: "T-shirts", slug: "tshirt" },
-  { id: "cat-shorts", name: "Shorts", slug: "shorts" },
-  { id: "cat-shirt", name: "Shirts", slug: "shirt" },
-  { id: "cat-hoodie", name: "Hoodie", slug: "hoodie" },
-  { id: "cat-jeans", name: "Jeans", slug: "jeans" },
+  { id: "cat-tshirt", name: "Áo thun", slug: "tshirt" },
+  { id: "cat-shorts", name: "Quần short", slug: "shorts" },
+  { id: "cat-shirt", name: "Áo sơ mi", slug: "shirt" },
+  { id: "cat-hoodie", name: "Áo hoodie", slug: "hoodie" },
+  { id: "cat-jeans", name: "Quần jeans", slug: "jeans" },
 ];
 
 export const styles: Style[] = [
-  { id: "style-casual", name: "Casual", slug: "casual" },
-  { id: "style-formal", name: "Formal", slug: "formal" },
-  { id: "style-party", name: "Party", slug: "party" },
-  { id: "style-gym", name: "Gym", slug: "gym" },
+  { id: "style-casual", name: "Thường ngày", slug: "casual" },
+  { id: "style-formal", name: "Lịch sự", slug: "formal" },
+  { id: "style-party", name: "Dự tiệc", slug: "party" },
+  { id: "style-gym", name: "Thể thao", slug: "gym" },
 ];
 
 const allSizes: Size[] = ["S", "M", "L", "XL", "XXL"];
@@ -30,10 +30,10 @@ function genVariants(productId: string, color: Color, stocks: number[]): Product
 export const products: Product[] = [
   {
     id: "p1",
-    name: "Basic Cotton T-shirt",
+    name: "Áo thun cotton cơ bản",
     originalPrice: 189000,
     description:
-      "Áo thun cotton form regular, chất liệu thoáng mát, phù hợp mặc hằng ngày.",
+      "Áo thun cotton dáng vừa, chất liệu thoáng mát, phù hợp mặc hằng ngày.",
     images: [
       "https://picsum.photos/seed/p1a/600/800",
       "https://picsum.photos/seed/p1b/600/800",
@@ -51,10 +51,10 @@ export const products: Product[] = [
   },
   {
     id: "p2",
-    name: "Slim Fit Dress Shirt",
+    name: "Áo sơ mi dáng ôm",
     originalPrice: 349000,
     description:
-      "Sơ mi form slim, vải không nhăn, phù hợp đi làm hoặc dự tiệc.",
+      "Sơ mi dáng ôm, vải không nhăn, phù hợp đi làm hoặc dự tiệc.",
     images: [
       "https://picsum.photos/seed/p2a/600/800",
       "https://picsum.photos/seed/p2b/600/800",
@@ -70,9 +70,9 @@ export const products: Product[] = [
   },
   {
     id: "p3",
-    name: "Oversized Hoodie",
+    name: "Áo hoodie dáng rộng",
     originalPrice: 429000,
-    description: "Hoodie form rộng, nỉ bông dày dặn, giữ ấm tốt.",
+    description: "Hoodie dáng rộng, nỉ bông dày dặn, giữ ấm tốt.",
     images: [
       "https://picsum.photos/seed/p3a/600/800",
       "https://picsum.photos/seed/p3b/600/800",
@@ -89,9 +89,9 @@ export const products: Product[] = [
   },
   {
     id: "p4",
-    name: "Slim Jeans",
+    name: "Quần jeans dáng ôm",
     originalPrice: 459000,
-    description: "Quần jeans form slim, co giãn nhẹ, dễ phối đồ.",
+    description: "Quần jeans dáng ôm, co giãn nhẹ, dễ phối đồ.",
     images: [
       "https://picsum.photos/seed/p4a/600/800",
       "https://picsum.photos/seed/p4b/600/800",
@@ -107,9 +107,9 @@ export const products: Product[] = [
   },
   {
     id: "p5",
-    name: "Gym Performance Shorts",
+    name: "Quần short tập luyện",
     originalPrice: 229000,
-    description: "Quần short tập gym, vải co giãn 4 chiều, thấm hút mồ hôi.",
+    description: "Quần short tập luyện, vải co giãn 4 chiều, thấm hút mồ hôi.",
     images: [
       "https://picsum.photos/seed/p5a/600/800",
       "https://picsum.photos/seed/p5b/600/800",
@@ -122,7 +122,7 @@ export const products: Product[] = [
   },
   {
     id: "p6",
-    name: "Party Print Shirt",
+    name: "Áo sơ mi họa tiết dự tiệc",
     originalPrice: 389000,
     description:
       "Sơ mi hoạ tiết, chất liệu lụa mềm, nổi bật trong các buổi tiệc.",
@@ -141,9 +141,9 @@ export const products: Product[] = [
   },
   {
     id: "p7",
-    name: "Casual Graphic Tee",
+    name: "Áo thun in hình",
     originalPrice: 199000,
-    description: "Áo thun in hình, chất liệu cotton 100%, form regular.",
+    description: "Áo thun in hình, chất liệu cotton 100%, dáng vừa.",
     images: [
       "https://picsum.photos/seed/p7a/600/800",
       "https://picsum.photos/seed/p7b/600/800",
@@ -160,9 +160,9 @@ export const products: Product[] = [
   },
   {
     id: "p8",
-    name: "Formal Slacks",
+    name: "Quần tây lịch sự",
     originalPrice: 399000,
-    description: "Quần tây form slim, vải cao cấp, phù hợp đi làm.",
+    description: "Quần tây dáng ôm, vải cao cấp, phù hợp đi làm.",
     images: [
       "https://picsum.photos/seed/p8a/600/800",
       "https://picsum.photos/seed/p8b/600/800",
@@ -178,10 +178,10 @@ export const products: Product[] = [
   },
   {
     id: "p9",
-    name: "Oversized Cotton Tee",
+    name: "Áo thun cotton dáng rộng",
     originalPrice: 250000,
     salePrice: 200000,
-    description: "Áo thun cotton form rộng, mềm mại, dễ phối đồ hằng ngày.",
+    description: "Áo thun cotton dáng rộng, mềm mại, dễ phối đồ hằng ngày.",
     images: [
       "https://picsum.photos/seed/p9a/600/800",
       "https://picsum.photos/seed/p9b/600/800",
@@ -199,11 +199,11 @@ export const products: Product[] = [
   },
   {
     id: "p10",
-    name: "Classic Oxford Shirt",
+    name: "Áo sơ mi Oxford cổ điển",
     originalPrice: 400000,
     salePrice: 300000,
     description:
-      "Sơ mi Oxford cổ điển, form regular, phù hợp đi làm và gặp gỡ.",
+      "Sơ mi Oxford cổ điển, dáng vừa, phù hợp đi làm và gặp gỡ.",
     images: [
       "https://picsum.photos/seed/p10a/600/800",
       "https://picsum.photos/seed/p10b/600/800",
@@ -216,7 +216,7 @@ export const products: Product[] = [
   },
   {
     id: "p11",
-    name: "Zip-Up Fleece Hoodie",
+    name: "Áo hoodie nỉ khóa kéo",
     originalPrice: 500000,
     salePrice: 350000,
     description: "Hoodie khóa kéo, lớp nỉ mềm giữ ấm, tiện mặc khi ra ngoài.",
@@ -236,7 +236,7 @@ export const products: Product[] = [
   },
   {
     id: "p12",
-    name: "Straight Fit Denim Jeans",
+    name: "Quần jeans ống đứng",
     originalPrice: 600000,
     salePrice: 360000,
     description:
@@ -256,7 +256,7 @@ export const products: Product[] = [
   },
   {
     id: "p13",
-    name: "Lightweight Training Shorts",
+    name: "Quần short thể thao nhẹ",
     originalPrice: 300000,
     salePrice: 150000,
     description: "Quần short thể thao nhẹ, nhanh khô, thoải mái khi vận động.",

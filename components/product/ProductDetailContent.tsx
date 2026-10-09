@@ -9,7 +9,7 @@ import { useApi } from "@/lib/use-api";
 import ApiStatus from "@/components/ApiStatus";
 import type { Product, Category } from "@/lib/catalog";
 
-// Product detail is loaded through REST instead of importing server SQL.
+// Chi tiết sản phẩm được tải qua REST API, không nhập module SQL vào client.
 export default function ProductDetailContent({ id }: { id: string }) {
   const detail = useApi<{product: Product; category: Category | null}>(`/products/${encodeURIComponent(id)}`);
   const suggestions = useApi<Product[]>(`/products/${encodeURIComponent(id)}/suggestions`);
@@ -22,13 +22,13 @@ export default function ProductDetailContent({ id }: { id: string }) {
         <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
           <li>
             <Link href="/" className="hover:text-black">
-              Home
+              Trang chủ
             </Link>
           </li>
           <li>/</li>
           <li>
             <Link href="/shop" className="hover:text-black">
-              Shop
+              Sản phẩm
             </Link>
           </li>
           {category && (
@@ -64,7 +64,7 @@ export default function ProductDetailContent({ id }: { id: string }) {
       {suggestedProducts.length > 0 && (
         <section className="mt-12 border-t pt-9">
           <h2 className="mb-7 text-center text-3xl font-bold lg:text-5xl">
-            YOU MIGHT ALSO LIKE
+            CÓ THỂ BẠN CŨNG THÍCH
           </h2>
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
             {suggestedProducts.map((item) => (

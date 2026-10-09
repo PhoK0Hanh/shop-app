@@ -5,11 +5,13 @@ import Link from "next/link";
 import { Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
 import { useCart } from "@/lib/cart-store";
 import ApiStatus from "@/components/ApiStatus";
+import CheckoutButton from "@/components/cart/CheckoutButton";
 import { formatPrice, getDiscountPercent } from "@/lib/catalog";
+import { getColorLabel } from "@/lib/catalog-labels";
 
 export default function CartContent() {
   // API lỗi không được hiển thị nhầm thành giỏ trống hoặc xóa dữ liệu đã lưu.
-  const { items, ready, error, retry, findCartVariant, totalQuantity, updateQuantity, removeItem, clearCart } = useCart();
+  const { items, ready, error, retry, findCartVariant, totalQuantity, updateQuantity, removeItem, clearCart, consumeItems } = useCart();
   const lines = items.flatMap((item) => {
     const match = findCartVariant(item.variantId);
     if (!match) return [];
@@ -49,7 +51,7 @@ export default function CartContent() {
                   <Link href={`/product/${line.product.id}`} className="min-w-0 font-bold wrap-break-word hover:underline sm:text-lg">{line.product.name}</Link>
                   <button type="button" title="Xóa sản phẩm" onClick={() => removeItem(line.variantId)} className="shrink-0 rounded-lg p-1 text-red-500 hover:bg-red-50"><Trash2 size={20} /></button>
                 </div>
-                <p className="mt-1 text-sm text-gray-500">Size: <span className="text-black">{line.variant.size}</span> · Màu: <span className="text-black">{line.variant.color}</span></p>
+                <p className="mt-1 text-sm text-gray-500">Kích cỡ: <span className="text-black">{line.variant.size}</span> · Màu: <span className="text-black">{getColorLabel(line.variant.color)}</span></p>
                 <div className="mt-3 flex flex-wrap items-center gap-2">
                   <span className="font-bold sm:text-lg">{formatPrice(line.price)}</span>
                   {line.discount !== null && <><del className="text-sm text-gray-400">{formatPrice(line.product.originalPrice)}</del><span className="text-xs text-red-500">-{line.discount}%</span></>}
@@ -76,9 +78,8 @@ export default function CartContent() {
           <div className="flex justify-between gap-4 border-t border-gray-200 pt-4 text-lg"><dt className="font-medium">Tổng tiền sản phẩm</dt><dd className="font-bold">{formatPrice(total)}</dd></div>
         </dl>
         <p className="mt-4 text-sm text-gray-500">Chưa bao gồm phí vận chuyển.</p>
-        {/* Checkout sẽ được kết nối khi có chức năng tạo đơn hàng. */}
-        <button type="button" disabled className="mt-6 h-12 w-full cursor-not-allowed rounded-full bg-black font-medium text-white opacity-40">Thanh toán</button>
-        <p className="mt-2 text-center text-xs text-gray-500">Chức năng thanh toán đang được phát triển.</p>
+        {/* API xác thực tài khoản và tạo đơn trực tiếp, bỏ qua bước thu tiền. */}
+        <CheckoutButton items={items} onCreated={consumeItems} />
         <Link href="/shop" className="mt-5 block text-center text-sm font-medium underline underline-offset-4">Tiếp tục mua sắm</Link>
       </aside>
     </div>

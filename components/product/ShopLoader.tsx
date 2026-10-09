@@ -31,8 +31,8 @@ export default function ShopLoader() {
   return <div className="mx-auto max-w-7xl px-4 py-8">
     <nav className="mb-6 text-sm text-gray-500">
       <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
-        <li><Link href="/" className="hover:text-black">Home</Link></li><li>/</li>
-        <li>{category ? <Link href="/shop" className="hover:text-black">Shop</Link> : <span className="text-black">Shop</span>}</li>
+        <li><Link href="/" className="hover:text-black">Trang chủ</Link></li><li>/</li>
+        <li>{category ? <Link href="/shop" className="hover:text-black">Sản phẩm</Link> : <span className="text-black">Sản phẩm</span>}</li>
         {category && <><li>/</li><li className="text-black">{category.name}</li></>}
       </ol>
     </nav>

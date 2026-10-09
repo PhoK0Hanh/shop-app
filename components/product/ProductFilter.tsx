@@ -54,7 +54,7 @@ export default function ProductFilter({
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-5 text-black">
       <div className="flex items-center justify-between border-b border-gray-200 pb-5">
-        <h2 className="text-xl font-bold">Filters</h2>
+        <h2 className="text-xl font-bold">Bộ lọc</h2>
         <SlidersHorizontal
           aria-hidden="true"
           size={20}
@@ -63,7 +63,7 @@ export default function ProductFilter({
       </div>
 
       <fieldset className="mt-5 border-b border-gray-200 pb-5">
-        <legend className="mb-3 text-lg font-bold">Categories</legend>
+        <legend className="mb-3 text-lg font-bold">Danh mục</legend>
         <div className="flex flex-wrap gap-2">
           {categories.map((category) => (
             <button
@@ -82,7 +82,7 @@ export default function ProductFilter({
       </fieldset>
 
       <fieldset className="mt-5 border-b border-gray-200 pb-5">
-        <legend className="mb-3 text-lg font-bold">Price</legend>
+        <legend className="mb-3 text-lg font-bold">Khoảng giá</legend>
         <Slider.Root
           value={priceRange}
           onValueChange={(range) => onChange({ ...value, priceRange: [range[0], range[1]] })}
@@ -101,7 +101,7 @@ export default function ProductFilter({
                   key={index}
                   index={index}
                   getAriaLabel={() =>
-                    index === 0 ? "Minimum price" : "Maximum price"
+                    index === 0 ? "Giá thấp nhất" : "Giá cao nhất"
                   }
                   getAriaValueText={(_, value) => priceFormatter.format(value)}
                   className="block size-5 rounded-full bg-black ring-2 ring-white focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-black"
@@ -117,7 +117,7 @@ export default function ProductFilter({
       </fieldset>
 
       <fieldset className="mt-5 border-b border-gray-200 pb-5">
-        <legend className="mb-3 text-lg font-bold">Styles</legend>
+        <legend className="mb-3 text-lg font-bold">Phong cách</legend>
         <div className="flex flex-wrap gap-2">
           {styles.map((style) => (
             <button
@@ -136,7 +136,7 @@ export default function ProductFilter({
       </fieldset>
 
       <fieldset className="mt-5">
-        <legend className="mb-3 text-lg font-bold">Size</legend>
+        <legend className="mb-3 text-lg font-bold">Kích cỡ</legend>
         <div className="flex flex-wrap gap-2">
           {sizes.map((size) => (
             <button
@@ -164,14 +164,14 @@ export default function ProductFilter({
         })}
         className="mt-6 w-full rounded-full bg-black py-2 text-sm font-medium text-white transition-colors hover:bg-[#383838] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
       >
-        Apply Filter
+        Áp dụng
       </button>
       <button
         type="button"
         onClick={resetFilters}
         className="mt-3 w-full rounded-full border border-gray-200 py-2 text-sm font-medium hover:border-black focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
       >
-        Clear all
+        Xóa bộ lọc
       </button>
     </div>
   );

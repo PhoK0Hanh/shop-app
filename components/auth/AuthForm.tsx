@@ -120,10 +120,10 @@ export default function AuthForm({
       } else {
         const { user } = await signInWithEmailAndPassword(auth, email, password);
         // Chỉ quay về trang cũ sau khi backend đã tạo cookie thành công.
-        await createServerSession(user);
+        const role = await createServerSession(user);
         setSuccess("Đăng nhập thành công.");
-        // Thay trang login trong lịch sử, giữ nguyên query lọc của trang trước đó.
-        router.replace(returnTo);
+        // Admin vào khu quản trị; khách hàng vẫn quay về trang trước khi đăng nhập.
+        router.replace(role === "admin" ? "/admin" : returnTo);
         router.refresh();
       }
     } catch (error) {
@@ -142,7 +142,7 @@ export default function AuthForm({
         href="/"
         className="text-sm text-gray-500 transition-colors hover:text-black"
       >
-        Home
+        Trang chủ
       </Link>
       <div className="mt-6 grid overflow-hidden rounded-3xl border border-gray-200 bg-white lg:grid-cols-2 lg:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.2)]">
         <div className="relative hidden flex-col justify-between overflow-hidden bg-black p-12 text-white lg:flex">
@@ -153,7 +153,7 @@ export default function AuthForm({
           </Link>
           <div className="relative my-16 space-y-6">
             <span className="text-xs font-medium tracking-[0.25em] text-gray-400">
-              YOUR STYLE STARTS HERE
+              PHONG CÁCH BẮT ĐẦU TỪ ĐÂY
             </span>
             <h2 className="max-w-md text-5xl font-bold leading-tight">
               Phong cách của bạn.
@@ -176,7 +176,7 @@ export default function AuthForm({
         <div className="px-6 py-8 sm:px-10 lg:p-12">
           <div className="mx-auto max-w-sm">
             <p className="mb-2 text-xs font-semibold tracking-widest text-gray-500">
-              {isSignup ? "JOIN SHOP.CO" : "WELCOME BACK"}
+              {isSignup ? "THAM GIA SHOP.CO" : "CHÀO MỪNG TRỞ LẠI"}
             </p>
             <h1 className="text-3xl font-bold sm:text-4xl">
               {isSignup ? "Tạo tài khoản" : "Đăng nhập"}

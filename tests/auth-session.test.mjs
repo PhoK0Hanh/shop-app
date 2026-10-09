@@ -21,7 +21,7 @@ function load(file, mocks) {
   return moduleStub.exports;
 }
 
-function setup({ claims, error, cookie, sessionError, profileError, missingProfile = false } = {}) {
+function setup({ claims, error, cookie, sessionError, profileError, missingProfile = false, role = "customer" } = {}) {
   const calls = [];
   class FirebaseAdminConfigError extends Error {}
   class UserProfileError extends Error {
@@ -32,6 +32,7 @@ function setup({ claims, error, cookie, sessionError, profileError, missingProfi
     syncFirebaseUser: async () => {
       calls.push(["profile"]);
       if (profileError) throw new UserProfileError(profileError, profileError === "USER_DISABLED" ? 403 : 409, "Profile rejected");
+      return { id: "database-user", role };
     },
     getUserByFirebaseUid: async (uid) => missingProfile ? null : ({ id: "database-user", uid, name: "Test", email: "test@example.com", role: "customer" }),
   };
@@ -85,7 +86,7 @@ test("POST verifies token and recent login before setting an HttpOnly cookie", a
   assert.equal(cookie.path, "/");
   assert.equal(cookie.maxAge, 432000);
   assert.equal(response.headers.get("cache-control"), "no-store");
-  assert.deepEqual(await response.json(), { success: true });
+  assert.deepEqual(await response.json(), { success: true, role: "customer" });
 });
 
 test("POST rejects cross origin and invalid bodies before calling Firebase", async () => {
@@ -172,12 +173,21 @@ test("Axios client refreshes token and submits JSON to session API", async () =>
     assert.equal(config.method, "POST");
     assert.deepEqual(config.data, {idToken: "fresh-token"});
     assert.equal(config.validateStatus(503), true);
-    return {status: 200, data: {success: true}};
+    return {status: 200, data: {success: true, role: "customer"}};
   }}}});
-  await client.createServerSession({getIdToken: async (force) => {
+  const role = await client.createServerSession({getIdToken: async (force) => {
     assert.equal(force, true); events.push("token"); return "fresh-token";
   }});
   assert.deepEqual(events, ["token", "request"]);
+  assert.equal(role, "customer");
+});
+
+// Quyền dùng để điều hướng phải đến từ hồ sơ server đã xác thực.
+test("session POST returns the database admin role and the client exposes it", async () => {
+  const response = await setup({ role: "admin" }).route.POST(request());
+  assert.equal((await response.json()).role, "admin");
+  const client = load("lib/firebase/session-client.ts", { "@/lib/api": { api: { request: async () => ({ status: 200, data: { success: true, role: "admin" } }) } } });
+  assert.equal(await client.createServerSession({ getIdToken: async () => "token" }), "admin");
 });
 
 test("Axios client rejects failed cookie creation and reports profile errors", async () => {

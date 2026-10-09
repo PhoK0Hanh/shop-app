@@ -56,7 +56,7 @@ function getPaginationItems(currentPage: number, pageCount: number) {
   return items;
 }
 
-export default function ShopProducts({ shop, title = "All", pending, onSortChange, onPageChange, filterTrigger }: {
+export default function ShopProducts({ shop, title = "Tất cả sản phẩm", pending, onSortChange, onPageChange, filterTrigger }: {
   shop: ShopPageData;
   title?: string;
   pending: boolean;

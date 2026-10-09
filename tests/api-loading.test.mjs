@@ -9,7 +9,7 @@ function load(file, mocks) {
     compilerOptions: { module: ts.ModuleKind.CommonJS },
   }).outputText;
   const exports = {};
-  new Function("require", "exports", code)((name) => mocks[name], exports);
+  new Function("require", "exports", "window", code)((name) => mocks[name], exports, mocks.window);
   return exports;
 }
 
@@ -60,6 +60,55 @@ test("changing query hides old data and late responses cannot replace the curren
   await new Promise((resolve) => setImmediate(resolve));
   assert.equal(Render("/products?page=3").data.page, 3);
   cleanup();
+});
+
+// Quyền bị chặn trong lúc tải và response cũ không thể bật mua hàng cho admin.
+test("purchase permission follows server role and refreshes after session changes", async () => {
+  let state;
+  let mounted = false;
+  let cleanup;
+  let authChanged;
+  let sessionChanged;
+  let unsubscribed = false;
+  const requests = [];
+  const auth = { currentUser: { uid: 'admin-user' } };
+  const { usePurchasePermission } = load('lib/use-purchase-permission.ts', {
+    react: {
+      useState(initial) { state ??= initial; return [state, (value) => { state = value; }]; },
+      useEffect(callback) { if (!mounted) { mounted = true; cleanup = callback(); } },
+    },
+    'firebase/auth': { onAuthStateChanged: (_, callback) => { authChanged = callback; return () => { unsubscribed = true; }; } },
+    '@/lib/firebase/client': { auth },
+    '@/lib/api': { api: { get: (_, { signal }) => new Promise((resolve, reject) => requests.push({ signal, resolve, reject })) } },
+    window: { addEventListener: (_, callback) => { sessionChanged = callback; }, removeEventListener: () => {} },
+  });
+  const Render = () => usePurchasePermission();
+  assert.equal(Render().canPurchase, false);
+  authChanged();
+  sessionChanged();
+  assert.equal(requests[0].signal.aborted, true);
+  requests[1].resolve({ status: 200, data: { user: { role: 'admin' } } });
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(Render().isAdmin, true);
+  assert.equal(Render().canPurchase, false);
+  requests[0].resolve({ status: 200, data: { user: { role: 'customer' } } });
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(Render().canPurchase, false);
+  sessionChanged();
+  requests[2].resolve({ status: 200, data: { user: { role: 'customer' } } });
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(Render().canPurchase, true);
+  auth.currentUser = null;
+  authChanged();
+  requests[3].resolve({ status: 401, data: { user: null } });
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(Render().canPurchase, true);
+  sessionChanged();
+  requests[4].reject(new Error('network'));
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(Render().canPurchase, false);
+  cleanup();
+  assert.equal(unsubscribed, true);
 });
 
 test("cart recognizes database-only variants and clamps merged quantities to API stock", () => {

@@ -8,10 +8,9 @@ export default function Footer() {
         <div className="grid grid-cols-2 lg:grid-cols-6 gap-8">
           <div className="col-span-2">
             <div className="text-4xl font-bold text-black">SHOP.CO</div>
-            {/* Dùng HTML entity cho dấu nháy đơn trong nội dung JSX để đạt quy tắc lint. */}
+            {/* Nội dung giới thiệu cửa hàng dùng cùng ngôn ngữ với giao diện mua sắm. */}
             <div className="max-w-xs">
-              We have clothes that suits your style and which you&apos;re proud to
-              wear. From women to men
+              Trang phục dành cho nam và nữ, giúp bạn tự tin thể hiện phong cách riêng.
             </div>
             <div className="flex gap-4 mt-4">
               <Link href="/test" className="hover:text-gray-500">
@@ -34,76 +33,76 @@ export default function Footer() {
             </div>
           </div>
           <div>
-            <h3 className="font-bold">COMPANY</h3>
+            <h3 className="font-bold">VỀ SHOP.CO</h3>
             <div className="flex flex-col gap-1">
               <Link href="/test" className="hover:text-gray-500">
-                About
+                Giới thiệu
               </Link>
               <Link href="/test" className="hover:text-gray-500">
-                Feature
+                Điểm nổi bật
               </Link>
               <Link href="/test" className="hover:text-gray-500">
-                Works
+                Hoạt động
               </Link>
               <Link href="/test" className="hover:text-gray-500">
-                Career
+                Tuyển dụng
               </Link>
             </div>
           </div>
           <div>
-            <h3 className="font-bold">HELP</h3>
+            <h3 className="font-bold">HỖ TRỢ</h3>
             <div className="flex flex-col gap-1">
               <Link href="/test" className="hover:text-gray-500">
-                Customer Support
+                Hỗ trợ khách hàng
               </Link>
               <Link href="/test" className="hover:text-gray-500">
-                Delivery Detail
+                Thông tin giao hàng
               </Link>
               <Link href="/test" className="hover:text-gray-500">
-                Term & Conditions
+                Điều khoản sử dụng
               </Link>
               <Link href="/test" className="hover:text-gray-500">
-                Privacy Policy
+                Chính sách bảo mật
               </Link>
             </div>
           </div>
           <div>
-            <h3 className="font-bold">FAQ</h3>
+            <h3 className="font-bold">CÂU HỎI THƯỜNG GẶP</h3>
             <div className="flex flex-col gap-1">
               <Link href="/test" className="hover:text-gray-500">
-                Account
+                Tài khoản
               </Link>
               <Link href="/test" className="hover:text-gray-500">
-                Manage Deliveries
+                Quản lý giao hàng
               </Link>
               <Link href="/test" className="hover:text-gray-500">
-                Orders
+                Đơn hàng
               </Link>
               <Link href="/test" className="hover:text-gray-500">
-                Payments
+                Thanh toán
               </Link>
             </div>
           </div>
           <div>
-            <h3 className="font-bold">RESOURCES</h3>
+            <h3 className="font-bold">TÀI NGUYÊN</h3>
             <div className="flex flex-col gap-1">
               <Link href="/test" className="hover:text-gray-500">
-                Free eBooks
+                Sách điện tử miễn phí
               </Link>
               <Link href="/test" className="hover:text-gray-500">
-                Development Tutorial
+                Hướng dẫn phát triển
               </Link>
               <Link href="/test" className="hover:text-gray-500">
-                How to - Blog
+                Bài viết hướng dẫn
               </Link>
               <Link href="/test" className="hover:text-gray-500">
-                Youtube Playlist
+                Danh sách video YouTube
               </Link>
             </div>
           </div>
         </div>
         <div className="border-t mt-6 py-4">
-          Shop.co © 2002-2026, All Rights Reserved
+          Shop.co © 2002-2026, Bảo lưu mọi quyền
         </div>
       </div>
     </footer>

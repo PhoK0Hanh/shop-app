@@ -19,7 +19,7 @@ export interface Product {
   categoryId: string;
   styleIds: string[];
   variants: ProductVariant[];
-  soldCount: number; // dùng tạm cho "Top Seller" trước khi có Order thật
+  soldCount: number; // Số lượt bán dùng để sắp xếp danh sách bán chạy.
   createdAt: string; // ISO date string, ví dụ "2026-09-01"
 }
 

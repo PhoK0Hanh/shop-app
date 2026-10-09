@@ -71,6 +71,8 @@ export default function AccountMenu({ onOpen }: { onOpen: () => void }) {
       await clearServerSession();
       await signOut(auth);
       setOpen(false);
+      // Chỉ về trang chủ khi cả cookie server và phiên Firebase đã đăng xuất thành công.
+      router.replace("/");
       router.refresh();
     } catch (error) {
       setError(error instanceof SessionRequestError ? error.message : "Chưa thể đăng xuất. Vui lòng thử lại.");
@@ -109,6 +111,8 @@ export default function AccountMenu({ onOpen }: { onOpen: () => void }) {
         <div className="absolute right-0 top-full z-50 mt-2 w-64 max-w-[calc(100vw-2rem)] rounded-2xl border border-gray-200 bg-white p-4 shadow-lg">
           <p className="break-words text-sm font-semibold">{account.name}</p>
           {account.email && <p className="mt-1 break-all text-xs text-gray-500">{account.email}</p>}
+          {/* Lịch sử đơn hàng riêng của tài khoản được kiểm tra bằng session server. */}
+          <Link href="/orders" onClick={() => { setOpen(false); onOpen(); }} className="mt-3 block rounded-lg px-3 py-2 text-sm hover:bg-gray-100">Đơn hàng của tôi</Link>
           <button type="button" onClick={handleSignOut} disabled={signingOut}
             className="mt-3 flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-gray-100 disabled:cursor-wait disabled:opacity-50">
             <LogOut size={18} />

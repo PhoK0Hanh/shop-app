@@ -42,7 +42,7 @@ export default function ShopContent({
   const [filterOpen, setFilterOpen] = useState(false);
   const title =
     categories.find((category) => category.id === appliedFilters.categoryId)
-      ?.name ?? "All";
+      ?.name ?? "Tất cả sản phẩm";
 
   // Thay URL để ShopLoader gọi lại REST API bằng Axios.
   function navigate(query: string) {
@@ -95,7 +95,7 @@ export default function ShopContent({
           filterTrigger={
             <Dialog.Trigger className="flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium hover:bg-gray-100 lg:hidden">
               <SlidersHorizontal aria-hidden="true" size={18} />
-              Filter
+              Bộ lọc
             </Dialog.Trigger>
           }
         />
@@ -104,7 +104,7 @@ export default function ShopContent({
         <Dialog.Backdrop className="fixed inset-0 z-50 bg-black/40" />
         <Dialog.Popup className="fixed left-1/2 top-1/2 z-50 flex max-h-[90dvh] w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-2xl bg-white text-black shadow-xl">
           <div className="flex shrink-0 items-center justify-between border-b px-5 py-4">
-            <Dialog.Title className="text-xl font-bold">Filter</Dialog.Title>
+            <Dialog.Title className="text-xl font-bold">Bộ lọc</Dialog.Title>
             <Dialog.Close
               aria-label="Đóng bộ lọc"
               className="rounded-full p-2 hover:bg-gray-100"
@@ -113,7 +113,7 @@ export default function ShopContent({
             </Dialog.Close>
           </div>
           <Dialog.Description className="sr-only">
-            Chọn category, khoảng giá, style và size rồi nhấn Apply Filter.
+            Chọn danh mục, khoảng giá, phong cách và kích cỡ rồi nhấn Áp dụng.
           </Dialog.Description>
           <div className="min-h-0 overflow-y-auto overscroll-contain p-3">
             <ProductFilter

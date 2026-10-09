@@ -75,9 +75,10 @@ export async function POST(request: NextRequest) {
       return json({ error: "Vui lòng đăng nhập lại để tạo phiên." }, 401);
     }
     // Chỉ cấp cookie sau khi hồ sơ đã được đồng bộ và trạng thái tài khoản được kiểm tra.
-    await syncFirebaseUser(claims);
+    const profile = await syncFirebaseUser(claims);
     const session = await adminAuth.createSessionCookie(idToken, { expiresIn: SESSION_MAX_AGE * 1000 });
-    const response = json({ success: true });
+    // Role lấy từ PostgreSQL, không nhận quyền admin từ form hoặc email tự khai.
+    const response = json({ success: true, role: profile.role });
     response.cookies.set(SESSION_COOKIE, session, { ...sessionCookieOptions, maxAge: SESSION_MAX_AGE });
     return response;
   } catch (error) {

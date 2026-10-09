@@ -14,7 +14,7 @@ export default function Navbar() {
   const categories = catalog.data?.categories ?? [];
   const styles = catalog.data?.styles ?? [];
   // Tổng số lượng được đồng bộ với trang chi tiết và giỏ hàng.
-  const { totalQuantity } = useCart();
+  const { totalQuantity, canPurchase } = useCart();
   const [menuOpen, setMenuOpen] = useState(false);
   const [shopOpen, setShopOpen] = useState(false);
 
@@ -50,7 +50,7 @@ export default function Navbar() {
             }}
           >
             <Link href="/shop" className={`py-2 transition-colors duration-200 ${shopOpen ? "text-gray-500" : "text-black"}`}>
-              Shop
+              Sản phẩm
             </Link>
             <ChevronDown
               size={16}
@@ -65,7 +65,7 @@ export default function Navbar() {
                 {catalog.error && <button type="button" onClick={catalog.retry} className="px-3 py-2 text-sm text-red-600">Tải lại danh mục</button>}
                 <div className="grid grid-cols-2 gap-4 border-t pt-3">
                   <div>
-                    <h3 className="mb-2 px-3 text-sm font-bold">Các loại</h3>
+                    <h3 className="mb-2 px-3 text-sm font-bold">Danh mục</h3>
                     {categories.map((category) => (
                       <Link
                         key={category.id}
@@ -77,7 +77,7 @@ export default function Navbar() {
                     ))}
                   </div>
                   <div>
-                    <h3 className="mb-2 px-3 text-sm font-bold">Styles</h3>
+                    <h3 className="mb-2 px-3 text-sm font-bold">Phong cách</h3>
                     {styles.map((style) => (
                       <Link
                         key={style.id}
@@ -93,19 +93,22 @@ export default function Navbar() {
             </div>
           </div>
           <Link href="/" className="py-2 transition-colors hover:text-gray-500">
-            New Arrivals
+            Hàng mới
           </Link>
           <Link href="/" className="py-2 transition-colors hover:text-gray-500">
-            On Sale
+            Khuyến mãi
           </Link>
         </div>
 
         {/* 3. Icon giỏ hàng bên phải */}
         <div className="ml-auto flex shrink-0 items-center gap-1 md:gap-2">
-          <Link href="/cart" title="Giỏ hàng" onClick={() => setMenuOpen(false)} className="relative flex size-10 items-center justify-center rounded-full transition-colors hover:bg-gray-100">
+          {/* Admin dùng nút disabled thay cho link để không thể bấm mở giỏ hàng. */}
+          {!canPurchase ? <button type="button" disabled title="Giỏ hàng không khả dụng" className="flex size-10 cursor-not-allowed items-center justify-center rounded-full opacity-40">
+            <ShoppingCart size={22} />
+          </button> : <Link href="/cart" title="Giỏ hàng" onClick={() => setMenuOpen(false)} className="relative flex size-10 items-center justify-center rounded-full transition-colors hover:bg-gray-100">
             <ShoppingCart size={22} />
             {totalQuantity > 0 && <span className="absolute -right-1 -top-1 flex min-w-5 items-center justify-center rounded-full bg-black px-1 text-[10px] leading-5 text-white">{totalQuantity > 99 ? "99+" : totalQuantity}</span>}
-          </Link>
+          </Link>}
           {/* Đồng bộ tài khoản Firebase và đóng menu mobile khi mở mục tài khoản. */}
           <AccountMenu onOpen={() => setMenuOpen(false)} />
         </div>
@@ -114,13 +117,13 @@ export default function Navbar() {
         <div className="border-t bg-white px-4 py-2 md:hidden">
           <div className="mx-auto flex max-w-7xl flex-col gap-1 text-sm font-medium">
             <Link href="/shop" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-3 hover:bg-gray-100">
-              Shop
+              Sản phẩm
             </Link>
             <Link href="/" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-3 hover:bg-gray-100">
-              New Arrivals
+              Hàng mới
             </Link>
             <Link href="/" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-3 hover:bg-gray-100">
-              On Sale
+              Khuyến mãi
             </Link>
           </div>
         </div>

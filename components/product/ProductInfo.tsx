@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useCart } from "@/lib/cart-store";
 import { formatPrice, getDiscountPercent } from "@/lib/catalog";
 import type { Color, Product, Size } from "@/lib/catalog";
+import { getColorLabel } from "@/lib/catalog-labels";
 
 const colorHex: Record<Color, string> = {
   Black: "#000000",
@@ -19,7 +20,7 @@ const colorHex: Record<Color, string> = {
 
 export default function ProductInfo({ product }: { product: Product }) {
   // Đợi catalog API sẵn sàng trước khi thêm biến thể vào giỏ khách.
-  const { addItem, ready } = useCart();
+  const { addItem, ready, canPurchase } = useCart();
   const [cartMessage, setCartMessage] = useState("");
   const colors = [...new Set(product.variants.map((variant) => variant.color))];
   const [selectedColor, setSelectedColor] = useState<Color | null>(
@@ -37,7 +38,7 @@ export default function ProductInfo({ product }: { product: Product }) {
   );
   const availableStock = selectedVariant?.stock ?? 0;
   const canAddToCart =
-    ready && availableStock > 0 && quantity >= 1 && quantity <= availableStock;
+    ready && canPurchase && availableStock > 0 && quantity >= 1 && quantity <= availableStock;
 
   const discount = getDiscountPercent(product.originalPrice, product.salePrice);
 
@@ -70,7 +71,7 @@ export default function ProductInfo({ product }: { product: Product }) {
 
       {/* Chọn màu */}
       <div className="border-t pt-5">
-        <h2 className="mb-3 font-medium">Choose Color</h2>
+        <h2 className="mb-3 font-medium">Chọn màu</h2>
         <div className="flex flex-wrap gap-2">
           {colors.map((color) => {
             const isSelected = selectedColor === color;
@@ -81,7 +82,7 @@ export default function ProductInfo({ product }: { product: Product }) {
               <button
                 key={color}
                 type="button"
-                title={color}
+                title={getColorLabel(color)}
                 style={{ backgroundColor: colorHex[color] }}
                 disabled={isSoldOut}
                 onClick={() => {
@@ -97,16 +98,16 @@ export default function ProductInfo({ product }: { product: Product }) {
                     : "border-gray-300"
                 }`}
               >
-                <span className="sr-only">{color}</span>
+                <span className="sr-only">{getColorLabel(color)}</span>
               </button>
             );
           })}
         </div>
       </div>
 
-      {/* Chọn size */}
+      {/* Chọn kích cỡ */}
       <div className="border-t pt-5">
-        <h2 className="mb-3 font-medium">Choose Size</h2>
+        <h2 className="mb-3 font-medium">Chọn kích cỡ</h2>
 
         <div className="flex flex-wrap gap-2">
           {colorVariants.map((variant) => {
@@ -168,22 +169,22 @@ export default function ProductInfo({ product }: { product: Product }) {
             type="button"
             disabled={!canAddToCart}
             onClick={() => {
-              if (!selectedVariant) return;
+              if (!selectedVariant || !canPurchase) return;
               // Thêm theo biến thể đang chọn và báo số lượng thực tế được thêm.
               const added = addItem(selectedVariant.id, quantity);
               setCartMessage(added > 0
-                ? `Đã thêm ${added} sản phẩm (${selectedVariant.color}, ${selectedVariant.size}) vào giỏ hàng.${added < quantity ? " Đã đạt giới hạn tồn kho." : ""}`
+                ? `Đã thêm ${added} sản phẩm (${getColorLabel(selectedVariant.color)}, ${selectedVariant.size}) vào giỏ hàng.${added < quantity ? " Đã đạt giới hạn tồn kho." : ""}`
                 : "Biến thể này đã đạt giới hạn tồn kho trong giỏ hàng.");
             }}
             className="h-12 min-w-0 flex-1 rounded-full bg-black px-3 text-sm font-medium text-white hover:bg-[#383838] disabled:cursor-not-allowed disabled:opacity-40 sm:text-base"
           >
-            Add to Cart
+            Thêm vào giỏ hàng
           </button>
         </div>
         <p className="mt-2 text-sm text-gray-500">
           {selectedVariant
             ? `${availableStock} sản phẩm có sẵn`
-            : "Chọn size để thay đổi số lượng."}
+            : "Chọn kích cỡ để thay đổi số lượng."}
         </p>
         {cartMessage && <div className="mt-3 rounded-xl bg-gray-100 p-3 text-sm"><p>{cartMessage}</p><Link href="/cart" className="mt-1 inline-block font-semibold underline">Xem giỏ hàng</Link></div>}
       </div>

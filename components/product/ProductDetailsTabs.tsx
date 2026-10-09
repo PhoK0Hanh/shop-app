@@ -8,19 +8,20 @@ export default function ProductDetailsTabs({
   description: string;
 }) {
   const [activeTab, setActiveTab] = useState("description");
+  // Chính sách dùng nội dung tạm bằng tiếng Việt, chưa công bố điều kiện mua hàng.
   const tabs = [
     { id: "description", title: "Mô tả", content: description },
     {
       id: "shipping",
       title: "Chính sách giao hàng",
       content:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+        "Nội dung chính sách giao hàng đang được cập nhật. Thông tin về khu vực giao hàng, thời gian dự kiến và phí vận chuyển sẽ được bổ sung tại đây.",
     },
     {
       id: "returns",
       title: "Chính sách đổi hàng",
       content:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+        "Nội dung chính sách đổi hàng đang được cập nhật. Điều kiện đổi hàng, thời hạn và hướng dẫn thực hiện sẽ được bổ sung tại đây.",
     },
   ];
   const selectedTab = tabs.find((tab) => tab.id === activeTab)!;

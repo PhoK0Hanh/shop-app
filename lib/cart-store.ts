@@ -5,6 +5,7 @@ import { findCartVariant, normalizeCart, readCart } from "./cart";
 import type { CartItem } from "./cart";
 import type { Product } from "./catalog";
 import { useApi } from "./use-api";
+import { usePurchasePermission } from "./use-purchase-permission";
 
 const storageKey = "shop-app-cart-v1";
 let memorySnapshot = "[]";
@@ -47,6 +48,7 @@ function saveCart(items: CartItem[], products: Product[]) {
 }
 
 export function useCart() {
+  const permission = usePurchasePermission();
   // Giỏ khách vẫn lưu lựa chọn cục bộ; giá và tồn kho được tải từ PostgreSQL qua API.
   const catalog = useApi<Product[]>("/products/catalog");
   // Snapshot server luôn rỗng để HTML ban đầu khớp; React đọc localStorage sau hydration.
@@ -80,8 +82,16 @@ export function useCart() {
     if (products) saveCart(readCart(getSnapshot(), products).filter((item) => item.variantId !== variantId), products);
   }
 
-  return { items, ready, error: catalog.error, retry: catalog.retry,
+  // Trừ phần đã tạo đơn khỏi snapshot mới nhất, giữ thay đổi giỏ trong lúc chờ API.
+  function consumeItems(purchased: CartItem[]) {
+    if (!products) return;
+    saveCart(readCart(getSnapshot(), products).map((item) => ({ ...item,
+      quantity: item.quantity - (purchased.find((line) => line.variantId === item.variantId)?.quantity ?? 0),
+    })).filter((item) => item.quantity > 0), products);
+  }
+
+  return { items, ready, ...permission, error: catalog.error, retry: catalog.retry,
     findCartVariant: (id: string) => findCartVariant(id, products ?? []),
-    totalQuantity: items.reduce((sum, item) => sum + item.quantity, 0), addItem, updateQuantity, removeItem,
+    totalQuantity: items.reduce((sum, item) => sum + item.quantity, 0), addItem, updateQuantity, removeItem, consumeItems,
     clearCart: () => { if (products) saveCart([], products); } };
 }
