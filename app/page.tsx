@@ -101,14 +101,13 @@ export default function Home() {
           <h2 className="px-4 text-center font-bold text-3xl lg:text-5xl">
             KHÁM PHÁ THEO PHONG CÁCH
           </h2>
+          {/* Hiển thị chữ có sẵn trong ảnh phong cách. */}
           <div className="flex w-full flex-col gap-4 px-6 lg:px-20">
             <div className="grid grid-cols-1 lg:grid-cols-[407fr_684fr] gap-4">
               <Link
                 href="/shop?style=casual"
                 className="relative block overflow-hidden rounded-4xl transition duration-200 hover:-translate-y-1 hover:shadow-lg hover:brightness-95"
               >
-                {/* Nhãn HTML tiếng Việt phủ chữ tiếng Anh có sẵn trong ảnh. */}
-                <span className="absolute left-[5%] top-[7%] z-10 flex h-[22%] w-[55%] items-center bg-white px-2 text-xl font-bold sm:text-2xl">Thường ngày</span>
                 <Image
                   src="/images/casual.jpg"
                   alt="Phong cách thường ngày"
@@ -121,7 +120,6 @@ export default function Home() {
                 href="/shop?style=formal"
                 className="relative block overflow-hidden rounded-4xl transition duration-200 hover:-translate-y-1 hover:shadow-lg hover:brightness-95"
               >
-                <span className="absolute left-[5%] top-[7%] z-10 flex h-[22%] w-[55%] items-center bg-white px-2 text-xl font-bold sm:text-2xl">Lịch sự</span>
                 <Image
                   src="/images/formal2.jpg"
                   alt="Phong cách lịch sự"
@@ -143,7 +141,6 @@ export default function Home() {
                 href="/shop?style=party"
                 className="relative block overflow-hidden rounded-4xl transition duration-200 hover:-translate-y-1 hover:shadow-lg hover:brightness-95"
               >
-                <span className="absolute left-[5%] top-[7%] z-10 flex h-[22%] w-[55%] items-center bg-white px-2 text-xl font-bold sm:text-2xl">Dự tiệc</span>
                 <Image
                   src="/images/party2.jpg"
                   alt="Phong cách dự tiệc"
@@ -163,7 +160,6 @@ export default function Home() {
                 href="/shop?style=gym"
                 className="relative block overflow-hidden rounded-4xl transition duration-200 hover:-translate-y-1 hover:shadow-lg hover:brightness-95"
               >
-                <span className="absolute left-[5%] top-[7%] z-10 flex h-[22%] w-[55%] items-center bg-white px-2 text-xl font-bold sm:text-2xl">Thể thao</span>
                 <Image
                   src="/images/gym.jpg"
                   alt="Phong cách thể thao"
