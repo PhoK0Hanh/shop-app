@@ -10,7 +10,8 @@ export default function Footer() {
             <div className="text-4xl font-bold text-black">SHOP.CO</div>
             {/* Nội dung giới thiệu cửa hàng dùng cùng ngôn ngữ với giao diện mua sắm. */}
             <div className="max-w-xs">
-              Trang phục dành cho nam và nữ, giúp bạn tự tin thể hiện phong cách riêng.
+              Trang phục dành cho nam và nữ, giúp bạn tự tin thể hiện phong cách
+              riêng.
             </div>
             <div className="flex gap-4 mt-4">
               <Link href="/test" className="hover:text-gray-500">
@@ -67,7 +68,7 @@ export default function Footer() {
             </div>
           </div>
           <div>
-            <h3 className="font-bold">CÂU HỎI THƯỜNG GẶP</h3>
+            <h3 className="font-bold">FAQ</h3>
             <div className="flex flex-col gap-1">
               <Link href="/test" className="hover:text-gray-500">
                 Tài khoản
@@ -87,7 +88,7 @@ export default function Footer() {
             <h3 className="font-bold">TÀI NGUYÊN</h3>
             <div className="flex flex-col gap-1">
               <Link href="/test" className="hover:text-gray-500">
-                Sách điện tử miễn phí
+                Ebook miễn phí
               </Link>
               <Link href="/test" className="hover:text-gray-500">
                 Hướng dẫn phát triển
