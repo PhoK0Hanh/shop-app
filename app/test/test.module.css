@@ -1,0 +1,22 @@
+/* Transform tạo gợn sóng mà không làm thay đổi bố cục của dòng chữ. */
+.letter {
+  display: inline-block;
+  animation: wave 1.8s ease-in-out infinite;
+}
+
+@keyframes wave {
+  0%,
+  40%,
+  100% {
+    transform: translateY(0);
+  }
+  20% {
+    transform: translateY(-0.35em);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .letter {
+    animation: none;
+  }
+}
