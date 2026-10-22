@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import ProductCard from "@/components/product/ProductCard";
+import ProductCardSkeleton from "@/components/product/ProductCardSkeleton";
 import { useApi } from "@/lib/use-api";
 import type { Product } from "@/lib/catalog";
 import ApiStatus from "@/components/ApiStatus";
@@ -63,8 +64,10 @@ export default function Home() {
           <h2 className="text-center font-bold text-3xl lg:text-5xl">
             HÀNG MỚI
           </h2>
-          {!featured.data && <ApiStatus error={featured.error} retry={featured.retry} />}
-          <div className="grid w-full grid-cols-2 lg:grid-cols-4 gap-4">
+          {featured.error && <ApiStatus error={featured.error} retry={featured.retry} />}
+          <div aria-busy={featured.loading} className="grid w-full grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Chỉ hiện skeleton khi chờ dữ liệu; lỗi vẫn có nút Thử lại. */}
+            {featured.loading && Array.from({ length: 4 }, (_, index) => <ProductCardSkeleton key={`loading-${index}`} />)}
             {(featured.data?.newArrivals ?? []).map((product, index) => (
               <ProductCard
                 key={product.id}
@@ -84,8 +87,9 @@ export default function Home() {
           <h2 className="text-center font-bold text-3xl lg:text-5xl">
             BÁN CHẠY
           </h2>
-          {!featured.data && <ApiStatus error={featured.error} retry={featured.retry} />}
-          <div className="grid w-full grid-cols-2 lg:grid-cols-4 gap-4">
+          {featured.error && <ApiStatus error={featured.error} retry={featured.retry} />}
+          <div aria-busy={featured.loading} className="grid w-full grid-cols-2 lg:grid-cols-4 gap-4">
+            {featured.loading && Array.from({ length: 4 }, (_, index) => <ProductCardSkeleton key={`loading-${index}`} />)}
             {(featured.data?.topSellers ?? []).map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}

@@ -10,6 +10,7 @@ import { parseShopQuery } from "@/lib/shop-query";
 import { parseFilterQuery } from "@/lib/product-filters";
 import ShopContent from "@/components/product/ShopContent";
 import ApiStatus from "@/components/ApiStatus";
+import ShopSkeleton from "@/components/product/ShopSkeleton";
 
 export default function ShopLoader() {
   const query = useSearchParams().toString();
@@ -24,7 +25,9 @@ export default function ShopLoader() {
     else params.set("page", String(result.data.page));
     router.replace(params.size ? `/shop?${params}` : "/shop", { scroll: false });
   }, [result.data, query, router]);
-  if (!catalog.data || !result.data) return <ApiStatus error={catalog.error || result.error} retry={() => { catalog.retry(); result.retry(); }} />;
+  // Tách lỗi khỏi trạng thái tải để skeleton không che thông báo và nút thử lại.
+  if (catalog.error || result.error) return <ApiStatus error={catalog.error || result.error} retry={() => { catalog.retry(); result.retry(); }} />;
+  if (!catalog.data || !result.data) return <ShopSkeleton />;
   const { categories, styles } = catalog.data;
   const filters = parseFilterQuery(query, categories, styles);
   const category = categories.find((item) => item.id === filters.categoryId);
