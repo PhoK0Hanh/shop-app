@@ -57,7 +57,7 @@ export default function CheckoutButton({ items, onCreated }: { items: CartItem[]
     } finally { pending.current = false; setLoading(false); }
   }
   return <>
-    {showForm ? <form className="mt-6 border-t border-gray-200 pt-5" onSubmit={(event) => { event.preventDefault(); void checkout(); }}>
+    {showForm ? <form className="shop-enter mt-6 border-t border-gray-200 pt-5" onSubmit={(event) => { event.preventDefault(); void checkout(); }}>
       <h3 className="mb-4 text-lg font-semibold">Thông tin giao hàng</h3>
       <fieldset disabled={loading} className="space-y-4 disabled:opacity-60">
         <label className="block text-sm font-medium">Tên người nhận <span className="text-red-500">*</span>
@@ -81,7 +81,7 @@ export default function CheckoutButton({ items, onCreated }: { items: CartItem[]
             className="mt-2 w-full resize-y rounded-xl border border-gray-300 px-4 py-3 font-normal outline-none focus:border-black" placeholder="Hướng dẫn giao hàng nếu có" />
         </label>
       </fieldset>
-      <button type="submit" disabled={loading || !items.length} className="mt-5 h-12 w-full rounded-full bg-black font-medium text-white transition-colors hover:bg-[#383838] disabled:cursor-wait disabled:opacity-50">
+      <button type="submit" disabled={loading || !items.length} className="shop-press mt-5 h-12 w-full rounded-full bg-black font-medium text-white transition-colors hover:bg-[#383838] disabled:cursor-wait disabled:opacity-50">
         {loading ? 'Đang tạo đơn hàng...' : 'Xác nhận đặt hàng'}
       </button>
     </form> : <button type="button" onClick={openShipping} disabled={!items.length}
@@ -89,6 +89,6 @@ export default function CheckoutButton({ items, onCreated }: { items: CartItem[]
       Thanh toán
     </button>}
     <p className="mt-2 text-center text-xs text-gray-500">Cần đăng nhập để xác nhận đặt hàng. Đơn được tạo trực tiếp, chưa thu tiền.</p>
-    {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
+    {error && <p className="shop-enter mt-3 text-sm text-red-600">{error}</p>}
   </>;
 }

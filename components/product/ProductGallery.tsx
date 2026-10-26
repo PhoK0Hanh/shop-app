@@ -13,18 +13,22 @@ export default function ProductGallery({
   productName,
 }: ProductGalleryProps) {
   const [selectedImage, setSelectedImage] = useState(images[0]);
+  const [loadedImage, setLoadedImage] = useState<string | null>(null);
 
   return (
     <div className="min-w-0 w-full max-w-100 lg:w-[48%] lg:max-w-none lg:shrink-0 ">
       {/* Ảnh lớn */}
       <div className="flex w-full items-center justify-center overflow-hidden rounded-lg bg-[#F2F0F1]">
         <Image
+          key={selectedImage}
           src={selectedImage}
           alt={productName}
           width={400}
           height={533}
           preload
-          className="w-[48%] h-auto object-contain object-center"
+          onLoad={() => setLoadedImage(selectedImage)}
+          onError={() => setLoadedImage(selectedImage)}
+          className={`w-[48%] h-auto object-contain object-center transition-opacity duration-200 ${loadedImage === selectedImage ? "opacity-100" : "opacity-0"}`}
         />
       </div>
 
@@ -35,7 +39,10 @@ export default function ProductGallery({
             key={img}
             type="button"
             onClick={(event) => {
-              setSelectedImage(img);
+              if (img !== selectedImage) {
+                setLoadedImage(null);
+                setSelectedImage(img);
+              }
 
               const button = event.currentTarget;
               const container = button.parentElement;
@@ -43,11 +50,11 @@ export default function ProductGallery({
               if (container) {
                 container.scrollTo({
                   left: button.offsetLeft,
-                  behavior: "smooth",
+                  behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
                 });
               }
             }}
-            className={`overflow-hidden rounded-lg shrink-0 border-2 ${
+            className={`shop-press overflow-hidden rounded-lg shrink-0 border-2 ${
               selectedImage === img ? "border-black" : "border-transparent"
             }`}
           >

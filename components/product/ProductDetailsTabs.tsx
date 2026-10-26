@@ -44,7 +44,8 @@ export default function ProductDetailsTabs({
           </button>
         ))}
       </div>
-      <div className="py-6">
+      {/* Đổi key để nội dung mới chạy animation một lần khi chọn tab. */}
+      <div key={activeTab} className="shop-enter py-6">
         <h2 className="mb-3 text-xl font-bold">{selectedTab.title}</h2>
         <p className="whitespace-pre-line leading-relaxed text-gray-600">
           {selectedTab.content}

@@ -54,7 +54,7 @@ export default function AdminProducts({initialSearch='',initialStatus='',initial
           <button type="button" disabled={busy} title="Tải lại dữ liệu" onClick={()=>{if(!draft||window.confirm('Bỏ bản nháp và tải lại dữ liệu?')){setDraft(null);catalog.retry();}}} className="rounded-lg border border-gray-300 px-3 hover:bg-gray-50 disabled:opacity-40"><RefreshCw size={17}/></button>
         </div>
         {draft&&<p className="text-xs text-gray-500">Đang sửa một sản phẩm. Bấm Lưu hoặc Hủy trước khi chuyển hàng hay bộ lọc.</p>}
-        {error&&<p className="rounded-xl bg-red-50 p-3 text-sm text-red-600">{error}</p>}{message&&<p className="rounded-xl bg-green-50 p-3 text-sm text-green-700">{message}</p>}
+        {error&&<p className="shop-enter rounded-xl bg-red-50 p-3 text-sm text-red-600">{error}</p>}{message&&<p className="shop-enter rounded-xl bg-green-50 p-3 text-sm text-green-700">{message}</p>}
       </div>
       <fieldset disabled={busy} className="min-w-0 disabled:opacity-60"><div className="overflow-x-auto"><table className="w-full min-w-[1450px] text-left text-sm">
         <thead className="border-b border-gray-200 bg-gray-50 text-xs text-gray-500"><tr>{['Mã sản phẩm','Đường dẫn ảnh','Tên sản phẩm','Danh mục','Phong cách','Giá gốc','Giá giảm','Tồn kho','Trạng thái','Thao tác'].map(title=><th key={title} className="px-4 py-4 font-medium">{title}</th>)}</tr></thead>

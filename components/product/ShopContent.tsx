@@ -6,6 +6,7 @@ import { Dialog } from "@base-ui/react/dialog";
 import { SlidersHorizontal, X } from "lucide-react";
 import type { Category, Style } from "@/lib/catalog";
 import type { ShopPageData, ShopSortOrder } from "@/lib/shop-query";
+import { parseShopQuery } from "@/lib/shop-query";
 import ProductFilter from "@/components/product/ProductFilter";
 import ShopProducts from "@/components/product/ShopProducts";
 import {
@@ -17,7 +18,10 @@ import type { ProductFilters } from "@/lib/product-filters";
 interface ShopContentProps {
   categories: Category[];
   styles: Style[];
-  shop: ShopPageData;
+  shop?: ShopPageData;
+  loading: boolean;
+  error?: string;
+  retry: () => void;
   filterQuery: string;
 }
 
@@ -25,6 +29,9 @@ export default function ShopContent({
   categories,
   styles,
   shop,
+  loading,
+  error,
+  retry,
   filterQuery,
 }: ShopContentProps) {
   const router = useRouter();
@@ -88,8 +95,12 @@ export default function ShopContent({
         </aside>
         <ShopProducts
           shop={shop}
+          loading={loading}
+          error={error}
+          retry={retry}
+          requestedSort={parseShopQuery(filterQuery).sort}
           title={title}
-          pending={pending}
+          pending={pending || loading}
           onSortChange={changeSort}
           onPageChange={changePage}
           filterTrigger={
@@ -101,8 +112,8 @@ export default function ShopContent({
         />
       </div>
       <Dialog.Portal>
-        <Dialog.Backdrop className="fixed inset-0 z-50 bg-black/40" />
-        <Dialog.Popup className="fixed left-1/2 top-1/2 z-50 flex max-h-[90dvh] w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-2xl bg-white text-black shadow-xl">
+        <Dialog.Backdrop className="shop-backdrop fixed inset-0 z-50 bg-black/40" />
+        <Dialog.Popup className="shop-popup fixed left-1/2 top-1/2 z-50 flex max-h-[90dvh] w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-2xl bg-white text-black shadow-xl">
           <div className="flex shrink-0 items-center justify-between border-b px-5 py-4">
             <Dialog.Title className="text-xl font-bold">Bộ lọc</Dialog.Title>
             <Dialog.Close

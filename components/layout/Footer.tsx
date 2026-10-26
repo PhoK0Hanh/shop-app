@@ -14,18 +14,18 @@ export default function Footer() {
               riêng.
             </div>
             <div className="flex gap-4 mt-4">
-              <Link href="/test" className="hover:text-gray-500">
+              <Link href="/test" className="transition duration-150 hover:text-gray-500 motion-safe:hover:-translate-y-0.5">
                 <FaXTwitter size={24} />
               </Link>
-              <Link href="/test" className="hover:text-gray-500">
+              <Link href="/test" className="transition duration-150 hover:text-gray-500 motion-safe:hover:-translate-y-0.5">
                 <FaFacebook size={24} />
               </Link>
-              <Link href="/test" className="hover:text-gray-500">
+              <Link href="/test" className="transition duration-150 hover:text-gray-500 motion-safe:hover:-translate-y-0.5">
                 <FaInstagram size={24} />
               </Link>
               <Link
                 href="https://github.com/PhoK0Hanh"
-                className="hover:text-gray-500"
+                className="transition duration-150 hover:text-gray-500 motion-safe:hover:-translate-y-0.5"
                 target="_blank"
                 rel="noopener noreferrer"
               >

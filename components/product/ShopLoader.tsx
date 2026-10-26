@@ -26,8 +26,8 @@ export default function ShopLoader() {
     router.replace(params.size ? `/shop?${params}` : "/shop", { scroll: false });
   }, [result.data, query, router]);
   // Tách lỗi khỏi trạng thái tải để skeleton không che thông báo và nút thử lại.
-  if (catalog.error || result.error) return <ApiStatus error={catalog.error || result.error} retry={() => { catalog.retry(); result.retry(); }} />;
-  if (!catalog.data || !result.data) return <ShopSkeleton />;
+  if (catalog.error) return <ApiStatus error={catalog.error} retry={catalog.retry} />;
+  if (!catalog.data) return <ShopSkeleton />;
   const { categories, styles } = catalog.data;
   const filters = parseFilterQuery(query, categories, styles);
   const category = categories.find((item) => item.id === filters.categoryId);
@@ -39,6 +39,6 @@ export default function ShopLoader() {
         {category && <><li>/</li><li className="text-black">{category.name}</li></>}
       </ol>
     </nav>
-    <ShopContent categories={categories} styles={styles} shop={result.data} filterQuery={query} />
+    <ShopContent categories={categories} styles={styles} shop={result.data} loading={result.loading} error={result.error} retry={result.retry} filterQuery={query} />
   </div>;
 }

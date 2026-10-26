@@ -22,6 +22,7 @@ export default function ProductInfo({ product }: { product: Product }) {
   // Đợi catalog API sẵn sàng trước khi thêm biến thể vào giỏ khách.
   const { addItem, ready, canPurchase } = useCart();
   const [cartMessage, setCartMessage] = useState("");
+  const [cartFeedback, setCartFeedback] = useState(0);
   const colors = [...new Set(product.variants.map((variant) => variant.color))];
   const [selectedColor, setSelectedColor] = useState<Color | null>(
     product.variants.find((variant) => variant.stock > 0)?.color ??
@@ -92,7 +93,7 @@ export default function ProductInfo({ product }: { product: Product }) {
                     setQuantity(1);
                   }
                 }}
-                className={`size-10 shrink-0 rounded-full border transition-shadow disabled:cursor-not-allowed disabled:opacity-30 ${
+                className={`shop-press size-10 shrink-0 rounded-full border disabled:cursor-not-allowed disabled:opacity-30 ${
                   isSelected
                     ? "border-black ring-2 ring-black ring-offset-2"
                     : "border-gray-300"
@@ -125,7 +126,7 @@ export default function ProductInfo({ product }: { product: Product }) {
                     setQuantity(1);
                   }
                 }}
-                className={`rounded-full border px-5 py-3
+                className={`shop-press rounded-full border px-5 py-3
                   disabled:cursor-not-allowed disabled:opacity-30 ${
                     isSelected
                       ? "border-black bg-black text-white"
@@ -148,7 +149,7 @@ export default function ProductInfo({ product }: { product: Product }) {
               title="Giảm số lượng"
               disabled={quantity <= 1}
               onClick={() => setQuantity((current) => Math.max(1, current - 1))}
-              className="size-10 rounded-full text-xl hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-30"
+              className="shop-press size-10 rounded-full text-xl hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-30"
             >
               −
             </button>
@@ -160,7 +161,7 @@ export default function ProductInfo({ product }: { product: Product }) {
               onClick={() =>
                 setQuantity((current) => Math.min(availableStock, current + 1))
               }
-              className="size-10 rounded-full text-xl hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-30"
+              className="shop-press size-10 rounded-full text-xl hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-30"
             >
               +
             </button>
@@ -172,11 +173,14 @@ export default function ProductInfo({ product }: { product: Product }) {
               if (!selectedVariant || !canPurchase) return;
               // Thêm theo biến thể đang chọn và báo số lượng thực tế được thêm.
               const added = addItem(selectedVariant.id, quantity);
+              setCartFeedback((current) => current + 1);
+              // Navbar chỉ nảy khi giỏ thực sự nhận thêm sản phẩm.
+              if (added > 0) window.dispatchEvent(new Event("shop-cart-added"));
               setCartMessage(added > 0
                 ? `Đã thêm ${added} sản phẩm (${getColorLabel(selectedVariant.color)}, ${selectedVariant.size}) vào giỏ hàng.${added < quantity ? " Đã đạt giới hạn tồn kho." : ""}`
                 : "Biến thể này đã đạt giới hạn tồn kho trong giỏ hàng.");
             }}
-            className="h-12 min-w-0 flex-1 rounded-full bg-black px-3 text-sm font-medium text-white hover:bg-[#383838] disabled:cursor-not-allowed disabled:opacity-40 sm:text-base"
+            className="shop-press h-12 min-w-0 flex-1 rounded-full bg-black px-3 text-sm font-medium text-white hover:bg-[#383838] disabled:cursor-not-allowed disabled:opacity-40 sm:text-base"
           >
             Thêm vào giỏ hàng
           </button>
@@ -186,7 +190,7 @@ export default function ProductInfo({ product }: { product: Product }) {
             ? `${availableStock} sản phẩm có sẵn`
             : "Chọn kích cỡ để thay đổi số lượng."}
         </p>
-        {cartMessage && <div className="mt-3 rounded-xl bg-gray-100 p-3 text-sm"><p>{cartMessage}</p><Link href="/cart" className="mt-1 inline-block font-semibold underline">Xem giỏ hàng</Link></div>}
+        {cartMessage && <div key={cartFeedback} role="status" className="shop-enter mt-3 rounded-xl bg-gray-100 p-3 text-sm"><p>{cartMessage}</p><Link href="/cart" className="mt-1 inline-block font-semibold underline">Xem giỏ hàng</Link></div>}
       </div>
     </div>
   );

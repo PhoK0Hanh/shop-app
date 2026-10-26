@@ -7,6 +7,7 @@ import ProductCardSkeleton from "@/components/product/ProductCardSkeleton";
 import { useApi } from "@/lib/use-api";
 import type { Product } from "@/lib/catalog";
 import ApiStatus from "@/components/ApiStatus";
+import Reveal from "@/components/Reveal";
 
 export default function Home() {
   // Hero giữ nguyên; hai nhóm sản phẩm lấy từ PostgreSQL qua API.
@@ -60,7 +61,7 @@ export default function Home() {
         </div>
       </div>
       <div className="flex flex-col w-full max-w-7xl items-center justify-center p-4">
-        <section className="flex w-full flex-col items-center justify-center py-9 gap-7">
+        <Reveal className="w-full"><section className="flex w-full flex-col items-center justify-center py-9 gap-7">
           <h2 className="text-center font-bold text-3xl lg:text-5xl">
             HÀNG MỚI
           </h2>
@@ -82,8 +83,8 @@ export default function Home() {
           >
             Xem tất cả
           </Link>
-        </section>
-        <section className="flex w-full flex-col items-center justify-center py-9 gap-7">
+        </section></Reveal>
+        <Reveal className="w-full"><section className="flex w-full flex-col items-center justify-center py-9 gap-7">
           <h2 className="text-center font-bold text-3xl lg:text-5xl">
             BÁN CHẠY
           </h2>
@@ -100,8 +101,8 @@ export default function Home() {
           >
             Xem tất cả
           </Link>
-        </section>
-        <section className="flex flex-col justify-center items-center w-full bg-[#F2F0F1] rounded-4xl py-9 gap-6 lg:gap-9">
+        </section></Reveal>
+        <Reveal className="w-full"><section className="flex flex-col justify-center items-center w-full bg-[#F2F0F1] rounded-4xl py-9 gap-6 lg:gap-9">
           <h2 className="px-4 text-center font-bold text-3xl lg:text-5xl">
             KHÁM PHÁ THEO PHONG CÁCH
           </h2>
@@ -174,7 +175,7 @@ export default function Home() {
               </Link>
             </div>
           </div>
-        </section>
+        </section></Reveal>
       </div>
     </div>
   );

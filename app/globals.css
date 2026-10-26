@@ -127,4 +127,70 @@
   html {
     @apply font-sans;
   }
+  /* Phản hồi màu và nhấn nút thống nhất; không tác động vị trí của hàng trong bảng. */
+  :where(button, a, input, select, textarea, tr) {
+    transition-property: color, background-color, border-color, box-shadow, opacity;
+    transition-duration: 150ms;
+  }
+}
+
+/* Các hiệu ứng dùng chung chỉ chuyển opacity/transform để hạn chế nhảy bố cục. */
+@keyframes shop-enter {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes shop-chart-grow {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+.shop-enter { animation: shop-enter 200ms ease-out; }
+.shop-chart-grow { transform-origin: bottom; animation: shop-chart-grow 350ms ease-out; }
+.shop-press { transition: background-color 150ms, color 150ms, border-color 150ms, box-shadow 150ms, transform 150ms; }
+.shop-press:active:not(:disabled) { transform: scale(0.97); }
+
+/* Giữ menu trong DOM đến khi đóng xong, inert chặn tương tác khi đang ẩn. */
+.shop-menu {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px);
+  transition: opacity 180ms ease, transform 180ms ease, visibility 0s linear 180ms;
+}
+.shop-menu[data-open="true"] {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition-delay: 0s;
+}
+.shop-collapse {
+  grid-template-rows: 0fr;
+  opacity: 0;
+  visibility: hidden;
+  transition: grid-template-rows 200ms ease, opacity 200ms ease, visibility 0s linear 200ms;
+}
+.shop-collapse[data-open="true"] {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+/* Base UI giữ portal đến khi transition kết thúc, kể cả lúc đóng bằng Escape. */
+.shop-backdrop { transition: opacity 180ms ease; }
+.shop-popup { transition: opacity 180ms ease, scale 180ms ease; }
+.shop-backdrop[data-starting-style], .shop-backdrop[data-ending-style],
+.shop-popup[data-starting-style], .shop-popup[data-ending-style] { opacity: 0; }
+.shop-popup[data-starting-style], .shop-popup[data-ending-style] { scale: 0.97; }
+.shop-reveal[data-reveal="pending"] { opacity: 0; transform: translateY(12px); }
+.shop-reveal[data-reveal="visible"] { transition: opacity 350ms ease-out, transform 350ms ease-out; }
+
+/* Chế độ giảm chuyển động áp dụng cả hiệu ứng cũ và mới của cửa hàng. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+    scroll-behavior: auto !important;
+  }
+  .shop-reveal[data-reveal] { opacity: 1; transform: none; }
 }

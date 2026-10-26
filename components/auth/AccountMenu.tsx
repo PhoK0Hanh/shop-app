@@ -107,8 +107,8 @@ export default function AccountMenu({ onOpen }: { onOpen: () => void }) {
           <CircleUser size={22} />
         </Link>
       )}
-      {open && account && (
-        <div className="absolute right-0 top-full z-50 mt-2 w-64 max-w-[calc(100vw-2rem)] rounded-2xl border border-gray-200 bg-white p-4 shadow-lg">
+      {account && (
+        <div inert={!open} data-open={open} className="shop-menu absolute right-0 top-full z-50 mt-2 w-64 max-w-[calc(100vw-2rem)] rounded-2xl border border-gray-200 bg-white p-4 shadow-lg">
           <p className="break-words text-sm font-semibold">{account.name}</p>
           {account.email && <p className="mt-1 break-all text-xs text-gray-500">{account.email}</p>}
           {/* Lịch sử đơn hàng riêng của tài khoản được kiểm tra bằng session server. */}

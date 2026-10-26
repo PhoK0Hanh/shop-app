@@ -14,6 +14,8 @@ import {
 import { shopPageSize } from "@/lib/shop-query";
 import type { ShopPageData, ShopSortOrder } from "@/lib/shop-query";
 import ProductCard from "@/components/product/ProductCard";
+import ProductCardSkeleton from "@/components/product/ProductCardSkeleton";
+import ApiStatus from "@/components/ApiStatus";
 import {
   Select,
   SelectContent,
@@ -56,8 +58,12 @@ function getPaginationItems(currentPage: number, pageCount: number) {
   return items;
 }
 
-export default function ShopProducts({ shop, title = "Tất cả sản phẩm", pending, onSortChange, onPageChange, filterTrigger }: {
-  shop: ShopPageData;
+export default function ShopProducts({ shop, loading, error, retry, requestedSort, title = "Tất cả sản phẩm", pending, onSortChange, onPageChange, filterTrigger }: {
+  shop?: ShopPageData;
+  loading: boolean;
+  error?: string;
+  retry: () => void;
+  requestedSort: ShopSortOrder;
   title?: string;
   pending: boolean;
   onSortChange: (sort: ShopSortOrder) => void;
@@ -65,7 +71,10 @@ export default function ShopProducts({ shop, title = "Tất cả sản phẩm", 
   filterTrigger?: ReactNode;
 }) {
   // API đã lọc, sắp xếp và chia trang; component chỉ hiển thị JSON được trả về.
-  const { products: visibleProducts, total, page: currentPage, pageCount, sort: sortOrder } = shop;
+  // Giữ tiêu đề/bộ lọc khi tải; không hiển thị sản phẩm của truy vấn cũ.
+  const { products: visibleProducts, total, page: currentPage, pageCount, sort: sortOrder } = shop ?? {
+    products: [], total: 0, page: 1, pageCount: 0, sort: requestedSort,
+  };
   const selectedOption = sortOptions.find((option) => option.value === sortOrder)!;
   const SortIcon = selectedOption.icon;
   const offset = (currentPage - 1) * shopPageSize;
@@ -79,7 +88,7 @@ export default function ShopProducts({ shop, title = "Tất cả sản phẩm", 
         </div>
         <div className="flex flex-wrap items-center gap-3 text-sm">
           <p className="text-gray-500" aria-live="polite">
-            {pending ? "Đang tải..." : total === 0 ? "0 sản phẩm" : `${offset + 1}–${offset + visibleProducts.length} / ${total} sản phẩm`}
+            {pending ? "Đang tải..." : error ? "Chưa tải được sản phẩm" : total === 0 ? "0 sản phẩm" : `${offset + 1}–${offset + visibleProducts.length} / ${total} sản phẩm`}
           </p>
           <span id="sort-label" className="text-gray-500">Sắp xếp:</span>
           <Select
@@ -113,8 +122,15 @@ export default function ShopProducts({ shop, title = "Tất cả sản phẩm", 
         </div>
       </div>
 
-      {visibleProducts.length > 0 ? (
-        <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
+      {error ? <ApiStatus error={error} retry={retry} /> : loading ? (
+        <div role="status">
+          <span className="sr-only">Đang tải sản phẩm...</span>
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
+            {Array.from({ length: shopPageSize }, (_, index) => <ProductCardSkeleton key={index} />)}
+          </div>
+        </div>
+      ) : visibleProducts.length > 0 ? (
+        <div className="shop-enter grid grid-cols-2 gap-4 lg:grid-cols-3">
           {visibleProducts.map((product, index) => (
             <ProductCard key={product.id} product={product} loading={index === 0 ? "eager" : "lazy"} />
           ))}

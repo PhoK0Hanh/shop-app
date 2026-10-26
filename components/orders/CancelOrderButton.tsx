@@ -27,7 +27,7 @@ export default function CancelOrderButton({ id, onCancelled }: { id: string; onC
     } finally { pending.current = false; setLoading(false); }
   }
   return <div className="mt-4 border-t border-gray-100 pt-4">
-    {confirming ? <>
+    {confirming ? <div className="shop-enter">
       <p className="mb-3 text-sm text-gray-600">Bạn muốn hủy đơn hàng này?</p>
       <div className="flex flex-wrap gap-3">
         <button type="button" onClick={cancel} disabled={loading} className="rounded-full bg-red-600 px-5 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50">
@@ -35,7 +35,7 @@ export default function CancelOrderButton({ id, onCancelled }: { id: string; onC
         </button>
         <button type="button" onClick={() => { setConfirming(false); setError(''); }} disabled={loading} className="rounded-full border border-gray-300 px-5 py-2 text-sm hover:bg-gray-100 disabled:opacity-50">Giữ đơn hàng</button>
       </div>
-    </> : <button type="button" onClick={() => setConfirming(true)} className="rounded-full border border-red-200 px-5 py-2 text-sm font-medium text-red-600 hover:bg-red-50">Hủy đơn</button>}
+    </div> : <button type="button" onClick={() => setConfirming(true)} className="rounded-full border border-red-200 px-5 py-2 text-sm font-medium text-red-600 hover:bg-red-50">Hủy đơn</button>}
     {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
   </div>;
 }

@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import type { FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Eye, EyeOff } from "lucide-react";
+import { ArrowRight, Eye, EyeOff, LoaderCircle } from "lucide-react";
 import { FirebaseError } from "firebase/app";
 import {
   createUserWithEmailAndPassword,
@@ -290,7 +290,7 @@ export default function AuthForm({
               )}
 
               {error && (
-                <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">
+                <p className="shop-enter rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">
                   {error}
                   {isSignup && accountCreated && (
                     <Link href={`/login?next=${encodeURIComponent(returnTo)}`} className="mt-2 block font-semibold underline">
@@ -300,7 +300,7 @@ export default function AuthForm({
                 </p>
               )}
               {success && (
-                <div className="rounded-xl bg-green-50 px-4 py-3 text-sm text-green-700">
+                <div className="shop-enter rounded-xl bg-green-50 px-4 py-3 text-sm text-green-700">
                   {success}
                   <Link
                     href={returnTo}
@@ -313,14 +313,14 @@ export default function AuthForm({
               <button
                 type="submit"
                 disabled={isSubmitting || Boolean(success) || (isSignup && accountCreated)}
-                className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-black px-5 font-medium text-white transition-colors hover:bg-[#383838] disabled:cursor-not-allowed disabled:opacity-60"
+                className="shop-press flex h-12 w-full items-center justify-center gap-2 rounded-full bg-black px-5 font-medium text-white transition-colors hover:bg-[#383838] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isSubmitting
                   ? "Đang xử lý..."
                   : isSignup
                     ? "Tạo tài khoản"
                     : "Đăng nhập"}{" "}
-                <ArrowRight size={18} />
+                {isSubmitting ? <LoaderCircle size={18} className="animate-spin" /> : <ArrowRight size={18} />}
               </button>
             </form>
 
