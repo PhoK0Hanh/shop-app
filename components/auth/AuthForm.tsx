@@ -13,6 +13,7 @@ import {
 } from "firebase/auth";
 import { auth } from "@/lib/firebase/client";
 import { createServerSession, SessionRequestError } from "@/lib/firebase/session-client";
+import DemoAdminButton from './DemoAdminButton';
 
 // Chuyển mã lỗi Firebase thành thông báo dễ hiểu, không đưa lỗi kỹ thuật lên form.
 function getAuthError(error: unknown) {
@@ -323,6 +324,7 @@ export default function AuthForm({
                 {isSubmitting ? <LoaderCircle size={18} className="animate-spin" /> : <ArrowRight size={18} />}
               </button>
             </form>
+            {!isSignup && <DemoAdminButton disabled={isSubmitting || Boolean(success)} />}
 
             <p className="mt-6 text-center text-sm text-gray-500">
               {isSignup ? "Đã có tài khoản? " : "Chưa có tài khoản? "}

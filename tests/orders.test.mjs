@@ -66,22 +66,29 @@ test('shipping is required, normalized and bounded before accessing PostgreSQL',
   assert.equal(normalized.note, 'Doorbell');
 });
 
-test('shipping migration preserves old orders and rejects incomplete addresses', { skip: !process.env.PGDATABASE }, async () => {
+test('current order schema supports cancellation and rejects incomplete addresses', { skip: !process.env.PGDATABASE }, async () => {
   const client = new pg.Client({ connectionTimeoutMillis: 5000 });
   await client.connect();
+  const cleanup = 'DROP TABLE IF EXISTS pg_temp.order_items, pg_temp.orders, pg_temp.product_variants, pg_temp.users';
   try {
-    // Bảng tạm mô phỏng schema cũ; migration không chạm orders thật.
-    await client.query("CREATE TEMP TABLE orders (id text PRIMARY KEY, status text DEFAULT 'preparing' CONSTRAINT orders_status_check CHECK (status IN ('preparing','shipping','delivered'))); INSERT INTO orders (id) VALUES ('old-order')");
-    await client.query(fs.readFileSync('docs/orders-shipping-migration.sql', 'utf8').replaceAll('public.', ''));
-    await client.query(fs.readFileSync('docs/orders-cancellation-migration.sql', 'utf8').replaceAll('public.', ''));
-    const old = (await client.query('SELECT * FROM orders')).rows[0];
-    assert.equal(old.id, 'old-order');
-    assert.equal(old.shipping_name, null);
-    assert.equal(old.status, 'preparing');
-    await client.query("UPDATE orders SET status='cancelled' WHERE id='old-order'");
-    await assert.rejects(client.query("INSERT INTO orders (id, shipping_name) VALUES ('bad', 'Test User')"), { code: '23514' });
-    await client.query("INSERT INTO orders (id,shipping_name,shipping_phone,shipping_address,shipping_note) VALUES ('new','Test User','0912345678','123 Test Street','')");
-  } finally { await client.end(); }
+    // Kiểm tra schema cài mới bằng bảng TEMP; không sửa bảng hoặc dữ liệu public.
+    await client.query(cleanup);
+    await client.query('CREATE TEMP TABLE users (id text PRIMARY KEY); CREATE TEMP TABLE product_variants (id text PRIMARY KEY)');
+    const schema = fs.readFileSync('docs/orders-schema.sql', 'utf8').replaceAll('public.', '').replaceAll('CREATE TABLE ', 'CREATE TEMP TABLE ');
+    await client.query(schema);
+    await client.query("INSERT INTO users (id) VALUES ('u1')");
+    await client.query(`INSERT INTO orders (id, user_id, request_id, request_hash, total,
+      shipping_name, shipping_phone, shipping_address, shipping_note)
+      VALUES ('new', 'u1', $1, 'test-hash', 0, 'Test User', '0912345678', '123 Test Street', '')`, [randomUUID()]);
+    assert.equal((await client.query("SELECT status FROM orders WHERE id='new'")).rows[0].status, 'preparing');
+    await client.query("UPDATE orders SET status='cancelled' WHERE id='new'");
+    assert.equal((await client.query("SELECT status FROM orders WHERE id='new'")).rows[0].status, 'cancelled');
+    await assert.rejects(client.query("UPDATE orders SET shipping_phone=NULL WHERE id='new'"), { code: '23514' });
+    await assert.rejects(client.query("UPDATE orders SET status='invalid' WHERE id='new'"), { code: '23514' });
+  } finally {
+    // Dọn bảng tạm trước khi connection được pooler tái sử dụng.
+    try { await client.query(cleanup); } finally { await client.end(); }
+  }
 });
 
 test('PostgreSQL: snapshot, stock, idempotency, rollback and ownership', { skip: !process.env.PGDATABASE }, async () => {

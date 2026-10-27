@@ -2,8 +2,8 @@
 import { useRef,useState } from 'react';
 import axios from 'axios';
 import { Plus,Search,RefreshCw,Package } from 'lucide-react';
-import { api } from '@/lib/api';
 import { useApi } from '@/lib/use-api';
+import { useAdminEnvironment } from './AdminEnvironment';
 import { formatPrice } from '@/lib/catalog';
 import type { Category,Style } from '@/lib/catalog';
 import type { AdminProduct,ProductDraft } from '@/lib/admin-product-types';
@@ -13,7 +13,8 @@ import ApiStatus from '@/components/ApiStatus';
 type Catalog={products:AdminProduct[];categories:Category[];styles:Style[]};
 const field='w-full min-w-24 rounded-lg border border-gray-300 bg-white px-2 py-2 text-sm outline-none focus:border-black';
 export default function AdminProducts({initialSearch='',initialStatus='',initialVariantId=''}:{initialSearch?:string;initialStatus?:string;initialVariantId?:string}){
-  const catalog=useApi<Catalog>('/admin/products');
+  const { client: api } = useAdminEnvironment();
+  const catalog=useApi<Catalog>('/admin/products', api);
   const [search,setSearch]=useState(initialSearch);const [category,setCategory]=useState('');const [style,setStyle]=useState('');const [status,setStatus]=useState(initialStatus);const [page,setPage]=useState(1);
   const [initialPopupOpen,setInitialPopupOpen]=useState(Boolean(initialVariantId));
   const [draft,setDraft]=useState<ProductDraft|null>(null);const [variantProduct,setVariantProduct]=useState<AdminProduct|null>(null);const [editVariants,setEditVariants]=useState(false);

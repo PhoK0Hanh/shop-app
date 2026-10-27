@@ -1,45 +1,112 @@
-# SHOP.CO — Shop App
+# SHOP.CO — Website bán quần áo
 
-<!-- Hướng dẫn mô tả chức năng và cấu hình hiện tại, không chứa thông tin đăng nhập thật. -->
+<!-- Giới thiệu dự án và hướng dẫn chạy local; các cấu hình bên dưới chỉ là giá trị mẫu. -->
 
-Website bán quần áo với giao diện tiếng Việt, giá VND và trang quản trị riêng. Dự án phục vụ học tập: xây dựng giao diện, REST API, xác thực Firebase và xử lý dữ liệu PostgreSQL trong cùng ứng dụng Next.js.
+## 1. Giới thiệu
 
-## Chức năng
+SHOP.CO là website bán quần áo với giao diện tiếng Việt, giá tiền VND và hai khu vực dành cho **khách hàng** và **quản trị viên**. Khách hàng có thể xem sản phẩm, chọn biến thể, thêm vào giỏ và đặt hàng. Quản trị viên quản lý sản phẩm, tồn kho, đơn hàng và tài khoản.
 
-- Trang chủ: hàng mới, sản phẩm bán chạy và lựa chọn theo phong cách.
-- Danh sách sản phẩm: lọc danh mục, phong cách, kích cỡ, khoảng giá; sắp xếp và phân trang 9 sản phẩm. Bộ lọc được lưu trên URL.
-- Chi tiết sản phẩm: thư viện ảnh, chọn màu/kích cỡ/số lượng, sản phẩm gợi ý.
-- Giỏ hàng lưu ở `localStorage`; giá và tồn kho được kiểm tra lại qua API.
-- Đăng ký/đăng nhập Email/Password bằng Firebase; server xác thực session và đồng bộ hồ sơ với PostgreSQL.
-- Đặt hàng sau khi đăng nhập và nhập thông tin giao hàng; xem và hủy đơn đang chuẩn bị.
-- Admin: tổng quan theo thời gian, biểu đồ số đơn, cảnh báo tồn kho, quản lý sản phẩm/biến thể, đơn hàng và khóa/mở tài khoản.
+Dự án phục vụ học tập và thực hành phát triển ứng dụng full-stack: xây dựng giao diện React, REST API, xác thực Firebase và xử lý dữ liệu PostgreSQL trong cùng một ứng dụng Next.js.
 
-Luồng đặt hàng hiện **bỏ qua thanh toán trực tuyến**. Đơn có các trạng thái `preparing`, `shipping`, `delivered`, `cancelled`; admin cập nhật trạng thái giao hàng thủ công. Chính sách giao/đổi hàng đang dùng nội dung tạm.
+**Xem thử:** [SHOP.CO Demo](https://shop-app-one-phi.vercel.app/)
 
-## Tech stack
+Để thử giao diện quản trị mà không cần tài khoản, mở `/login` khi chưa đăng nhập và bấm **Trải nghiệm trang quản trị**. Khu `/demo/admin` cho phép thử quản lý sản phẩm, biến thể, đơn hàng và tài khoản trên bộ dữ liệu giả riêng. Thay đổi lưu trong `sessionStorage`, giữ khi F5 và bị xóa khi bấm **Thoát demo**; nút **Đặt lại dữ liệu** khôi phục dữ liệu mẫu. Chế độ này không tạo phiên admin thật, không đọc thông tin khách hàng thật và không ghi vào database.
 
-| Thành phần | Công nghệ |
-|---|---|
-| Frontend và backend | Next.js 16.3.8, App Router, Route Handlers |
-| Giao diện | React 19, TypeScript, Tailwind CSS 4 |
-| Component và icon | Base UI, shadcn/ui, Lucide React, React Icons |
-| REST API client | Axios |
-| Database | PostgreSQL, truy vấn SQL bằng `pg` |
-| Xác thực | Firebase Authentication, Firebase Admin SDK |
-| Kiểm tra | ESLint, TypeScript, Node.js Test Runner |
+## 2. Chức năng
 
-Luồng dữ liệu: **component → Axios → `/api/...` → hàm server trong `lib/` → PostgreSQL**. Session và quyền admin được kiểm tra tại server; mật khẩu Firebase không lưu trong database của shop.
+### Dành cho khách hàng
 
-## Yêu cầu
+| Khu vực               | Chức năng                                                                                                               |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Trang chủ             | Hiển thị sản phẩm mới, bán chạy và các phong cách thời trang                                                            |
+| Danh sách sản phẩm    | Lọc theo danh mục, phong cách, kích cỡ và khoảng giá; lưu bộ lọc trên URL                                               |
+| Sắp xếp và phân trang | Mới nhất, cũ nhất, giá tăng/giảm, tên và bán chạy; 9 sản phẩm mỗi trang                                                 |
+| Chi tiết sản phẩm     | Xem thư viện ảnh, mô tả, chọn màu/kích cỡ/số lượng và xem sản phẩm gợi ý                                                |
+| Tài khoản             | Đăng ký, đăng nhập bằng email và mật khẩu qua Firebase; đăng xuất                                                       |
+| Giỏ hàng              | Thêm, cập nhật số lượng, xóa sản phẩm; lưu giỏ trong trình duyệt bằng `localStorage`                                    |
+| Đặt hàng              | Yêu cầu đăng nhập và nhập thông tin giao hàng; server kiểm tra lại giá và tồn kho trước khi tạo đơn                     |
+| Đơn hàng              | Xem đơn của tài khoản đang đăng nhập, theo dõi trạng thái và hủy đơn đang chuẩn bị                                      |
+| Trải nghiệm giao diện | Responsive, skeleton khi tải trang chủ/danh sách sản phẩm, hiệu ứng hover và chuyển động nhẹ có hỗ trợ giảm chuyển động |
 
-- Node.js **24.12.0 trở lên** và npm: các package Firebase đang dùng yêu cầu phiên bản Node này.
-- PostgreSQL; có thể dùng pgAdmin 4 để tạo database và chạy SQL.
-- Một project Firebase đã bật Authentication → Email/Password.
-- Git để clone dự án.
+### Dành cho quản trị viên
 
-## Cài đặt
+| Khu vực             | Chức năng                                                                                    |
+| ------------------- | -------------------------------------------------------------------------------------------- |
+| Tổng quan           | Thống kê theo thời gian, biểu đồ số đơn theo ngày, đơn gần đây và cảnh báo tồn kho           |
+| Sản phẩm            | Tìm kiếm, thêm, sửa, ẩn/hiện và xóa theo điều kiện; quản lý ảnh, danh mục, phong cách và giá |
+| Biến thể và tồn kho | Xem và chỉnh biến thể màu/kích cỡ cùng số lượng tồn kho                                      |
+| Đơn hàng            | Xem chi tiết, thông tin giao hàng và cập nhật trạng thái thủ công                            |
+| Tài khoản           | Xem danh sách, tìm kiếm và khóa/mở khóa tài khoản                                            |
+| Phân quyền          | Kiểm tra quyền admin ở server trước khi cho phép sử dụng chức năng quản trị                  |
 
-### 1. Clone và cài dependency
+### Luồng đặt hàng và phạm vi hiện tại
+
+```text
+Chọn sản phẩm → Giỏ hàng → Đăng nhập → Nhập thông tin giao hàng → Tạo đơn
+```
+
+| Trạng thái đơn       | Giá trị trong database |
+| -------------------- | ---------------------- |
+| Đang chuẩn bị        | `preparing`            |
+| Đang giao            | `shipping`             |
+| Giao hàng thành công | `delivered`            |
+| Đã hủy               | `cancelled`            |
+
+Dự án **chưa tích hợp thanh toán trực tuyến**: xác nhận đặt hàng sẽ tạo đơn ngay. Backend tính lại giá và trừ tồn kho trong transaction; hủy đơn đang chuẩn bị sẽ hoàn lại tồn kho.
+
+Giỏ hàng chưa đồng bộ giữa các thiết bị. Một số liên kết ở footer dẫn tới trang minh họa `/test`. Danh sách quản trị lọc/phân trang phía client; danh sách shop lọc/phân trang tại API.
+
+## 3. Công nghệ sử dụng
+
+| Thành phần        | Công nghệ và vai trò                                                                   |
+| ----------------- | -------------------------------------------------------------------------------------- |
+| Framework         | Next.js 16.3.8 — App Router cho các trang, Route Handlers cho REST API                 |
+| Giao diện         | React 19, TypeScript, Tailwind CSS 4                                                   |
+| Component và icon | Base UI, shadcn/ui, Lucide React, React Icons                                          |
+| Gọi API           | Axios và custom hook quản lý dữ liệu, trạng thái tải, lỗi và thử lại                   |
+| Backend runtime   | Node.js                                                                                |
+| Database          | PostgreSQL; truy vấn SQL trực tiếp bằng thư viện `pg`                                  |
+| Xác thực          | Firebase Authentication cho đăng ký/đăng nhập; Firebase Admin SDK xác thực phía server |
+| Kiểm tra          | ESLint, TypeScript và Node.js Test Runner                                              |
+
+Luồng lấy dữ liệu của giao diện:
+
+```text
+Component → Axios → /api/... → Hàm xử lý ở server → PostgreSQL
+```
+
+Frontend và backend nằm chung dự án Next.js, không cần chạy server Express riêng. Firebase quản lý thông tin đăng nhập; PostgreSQL lưu hồ sơ và quyền người dùng liên kết qua `firebase_uid`. Website sử dụng cookie phiên HttpOnly và kiểm tra quyền ở server. Mật khẩu Firebase không được lưu trong database của shop.
+
+### Cấu trúc thư mục
+
+```text
+app/                 Các trang và REST API của Next.js
+  admin/             Tổng quan, sản phẩm, đơn hàng và tài khoản
+  api/               API sản phẩm, danh mục, xác thực, đơn hàng và quản trị
+components/          Component giao diện dùng chung và theo chức năng
+lib/                 Truy vấn SQL, Firebase, Axios, kiểu dữ liệu và logic dùng chung
+docs/                Schema, migration, dữ liệu mẫu và tài liệu database
+tests/               Kiểm thử logic, API, xác thực và thao tác database
+public/              Hình ảnh và tài nguyên tĩnh
+```
+
+## 4. Cài đặt và chạy local
+
+### Bước 1 — Chuẩn bị môi trường
+
+- **Node.js 24.12.0 trở lên** và npm để đáp ứng yêu cầu của các package Firebase đang dùng.
+- **PostgreSQL** đang chạy; có thể dùng **pgAdmin 4** để quản lý và thực thi SQL.
+- Tài khoản **Firebase** để tạo project xác thực riêng.
+- **Git** để tải mã nguồn.
+
+Kiểm tra Node.js và npm trong terminal:
+
+```bash
+node -v
+npm -v
+```
+
+### Bước 2 — Tải mã nguồn và cài thư viện
 
 ```bash
 git clone https://github.com/PhoK0Hanh/shop-app.git
@@ -47,92 +114,109 @@ cd shop-app
 npm ci
 ```
 
-### 2. Tạo database
+Các lệnh tiếp theo đều chạy tại thư mục `shop-app`, nơi chứa `package.json`.
 
-Trong pgAdmin 4, kết nối PostgreSQL và tạo database tên `shop_app` bằng **Databases → Create → Database**. Hoặc mở Query Tool ở database `postgres` và chạy [create-database.sql](docs/create-database.sql).
+### Bước 3 — Tạo database và dữ liệu mẫu
 
-Sau đó chọn **database `shop_app`**, mở Query Tool và chạy toàn bộ từng file theo thứ tự:
+Trong pgAdmin 4, kết nối PostgreSQL, chọn **Databases → Create → Database** và tạo database tên `shop_app`.
 
-| Thứ tự | File | Mục đích |
-|---|---|---|
-| 1 | [catalog-schema.sql](docs/catalog-schema.sql) | Tạo 6 bảng danh mục, sản phẩm, ảnh, biến thể và phong cách |
-| 2 | [auth-schema.sql](docs/auth-schema.sql) | Tạo hồ sơ người dùng và bảng session của thiết kế cũ |
-| 3 | [firebase-users-migration.sql](docs/firebase-users-migration.sql) | Thêm Firebase UID, cho phép hồ sơ Firebase không có mật khẩu nội bộ |
-| 4 | [orders-schema.sql](docs/orders-schema.sql) | Tạo đơn hàng và chi tiết đơn, gồm địa chỉ giao hàng và trạng thái hủy |
-| 5 | [seed.sql](docs/seed.sql) | Thêm 5 danh mục, 4 phong cách và 13 sản phẩm mẫu tiếng Việt |
+Hoặc mở Query Tool của database `postgres` và chạy [create-database.sql](docs/create-database.sql).
 
-Với database mới, **không chạy** [orders-shipping-migration.sql](docs/orders-shipping-migration.sql) và [orders-cancellation-migration.sql](docs/orders-cancellation-migration.sql): `orders-schema.sql` đã có các thay đổi này. Hai file migration được giữ để nâng cấp database dùng schema cũ.
+Sau đó mở Query Tool của **database `shop_app`**. Mở, chạy toàn bộ và kiểm tra thành công từng file theo thứ tự:
 
-Các schema/migration chỉ chạy một lần. `seed.sql` có thể chạy lại nhưng sẽ cập nhật giá, tồn kho và thông tin của sản phẩm mẫu; chỉ dùng trên dữ liệu phát triển. Nếu Query Tool báo transaction đang lỗi, chạy `ROLLBACK;` trước khi sửa và chạy lại file.
+| Thứ tự | File                                                              | Nội dung                                                                     |
+| ------ | ----------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| 1      | [catalog-schema.sql](docs/catalog-schema.sql)                     | Tạo 6 bảng cho danh mục, sản phẩm, ảnh, biến thể và phong cách               |
+| 2      | [auth-schema.sql](docs/auth-schema.sql)                           | Tạo bảng người dùng và bảng session của thiết kế xác thực cũ                 |
+| 3      | [firebase-users-migration.sql](docs/firebase-users-migration.sql) | Thêm Firebase UID; cho phép hồ sơ Firebase không có username/mật khẩu nội bộ |
+| 4      | [orders-schema.sql](docs/orders-schema.sql)                       | Tạo đơn hàng và chi tiết đơn, gồm thông tin giao hàng và trạng thái hủy      |
+| 5      | [seed.sql](docs/seed.sql)                                         | Thêm 5 danh mục, 4 phong cách và 13 sản phẩm mẫu                             |
 
-### 3. Cấu hình Firebase
+Chạy schema/migration một lần khi khởi tạo. Chạy lại `seed.sql` sẽ cập nhật thông tin, giá và tồn kho của sản phẩm mẫu. Nếu Query Tool báo transaction đang lỗi, chạy `ROLLBACK;`, xử lý nguyên nhân rồi chạy lại file.
 
-1. Tạo project ở [Firebase Console](https://console.firebase.google.com/).
-2. Trong Project settings, đăng ký ứng dụng Web và lấy `apiKey`, `authDomain`, `projectId`, `appId`.
-3. Trong Authentication → Sign-in method, bật **Email/Password**. Kiểm tra Authentication → Settings → Authorized domains và thêm `localhost` khi chạy local; thêm domain website khi triển khai.
-4. Trong Project settings → Service accounts, tạo private key cho Firebase Admin. Lấy `project_id`, `client_email`, `private_key` để cấu hình biến môi trường phía server.
+Database gồm ba nhóm:
 
-Firebase Web và Firebase Admin phải thuộc cùng project. Không đưa service-account JSON hoặc private key vào Git.
+- **Sản phẩm:** `categories`, `products`, `product_images`, `product_variants`, `styles`, `product_styles`.
+- **Người dùng:** `users`; bảng `sessions` thuộc thiết kế cũ, không dùng trong luồng Firebase hiện tại.
+- **Đơn hàng:** `orders`, `order_items`; chi tiết đơn lưu thông tin sản phẩm tại thời điểm mua để giữ lịch sử khi sản phẩm thay đổi.
 
-### 4. Cấu hình biến môi trường
+Xem sơ đồ và giải thích tại [Quan hệ giữa các bảng](docs/database-relationships.md).
 
-Sao chép [.env.example](.env.example) thành `.env.local` ở thư mục gốc dự án.
+### Bước 4 — Thiết lập Firebase
 
-PowerShell:
+1. Vào [Firebase Console](https://console.firebase.google.com/) và tạo project.
+2. Trong **Project settings**, thêm ứng dụng **Web**. Lưu các giá trị `apiKey`, `authDomain`, `projectId`, `appId` trong cấu hình Firebase.
+3. Vào **Authentication → Sign-in method**, bật **Email/Password**.
+4. Trong **Authentication → Settings → Authorized domains**, kiểm tra và thêm `localhost` nếu chưa có.
+5. Vào **Project settings → Service accounts**, tạo private key cho Firebase Admin SDK. File JSON tải về chứa `project_id`, `client_email` và `private_key` cần dùng ở bước tiếp theo.
+
+Firebase Web và Firebase Admin phải thuộc **cùng project**. Giữ riêng file service-account JSON và private key, không đưa vào Git.
+
+### Bước 5 — Cấu hình biến môi trường
+
+Sao chép [.env.example](.env.example) thành `.env.local` tại thư mục gốc dự án.
+
+Với PowerShell:
 
 ```powershell
 Copy-Item .env.example .env.local
 ```
 
-macOS/Linux:
+Với macOS/Linux:
 
 ```bash
 cp .env.example .env.local
 ```
 
-Điền thông tin kết nối PostgreSQL và Firebase:
+Điền cấu hình PostgreSQL local:
 
-| Nhóm | Biến |
-|---|---|
-| PostgreSQL | `PGHOST`, `PGPORT`, `PGDATABASE`, `PGUSER`, `PGPASSWORD` |
-| Firebase Web | `NEXT_PUBLIC_FIREBASE_API_KEY`, `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`, `NEXT_PUBLIC_FIREBASE_PROJECT_ID`, `NEXT_PUBLIC_FIREBASE_APP_ID` |
-| Firebase Admin | `FIREBASE_ADMIN_PROJECT_ID`, `FIREBASE_ADMIN_CLIENT_EMAIL`, `FIREBASE_ADMIN_PRIVATE_KEY` |
+```dotenv
+PGHOST=localhost
+PGPORT=5432
+PGDATABASE=shop_app
+PGUSER=postgres
+PGPASSWORD=your-postgres-password
+```
 
-Private key đặt trong dấu nháy kép trên một dòng; dùng `\n` cho các ký tự xuống dòng. `PGUSER` là tài khoản PostgreSQL, thường là `postgres`, không phải tên server hiển thị trong pgAdmin.
+Thay `PGUSER` và `PGPASSWORD` bằng tài khoản PostgreSQL của bạn. `PGUSER` là tên role đăng nhập database, không phải tên server hiển thị trong pgAdmin. Nếu PostgreSQL dùng cổng khác, thay `PGPORT` tương ứng.
 
-Chỉ cấu hình Web dùng tiền tố `NEXT_PUBLIC_`. `.env.local` được Git bỏ qua. Sau khi đổi biến môi trường, dừng dev server bằng Ctrl+C rồi chạy lại.
+Điền cấu hình Firebase theo bảng đối chiếu:
 
-### 5. Chạy dự án
+| Biến trong `.env.local`            | Giá trị lấy từ Firebase              |
+| ---------------------------------- | ------------------------------------ |
+| `NEXT_PUBLIC_FIREBASE_API_KEY`     | Web config: `apiKey`                 |
+| `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` | Web config: `authDomain`             |
+| `NEXT_PUBLIC_FIREBASE_PROJECT_ID`  | Web config: `projectId`              |
+| `NEXT_PUBLIC_FIREBASE_APP_ID`      | Web config: `appId`                  |
+| `FIREBASE_ADMIN_PROJECT_ID`        | Service-account JSON: `project_id`   |
+| `FIREBASE_ADMIN_CLIENT_EMAIL`      | Service-account JSON: `client_email` |
+| `FIREBASE_ADMIN_PRIVATE_KEY`       | Service-account JSON: `private_key`  |
+
+Trong `.env.local`, private key đặt trong dấu nháy kép trên một dòng, với ký tự xuống dòng viết thành `\n`, theo mẫu trong `.env.example`.
+
+Chỉ cấu hình Firebase Web dùng tiền tố `NEXT_PUBLIC_`. Các biến kết nối database và Firebase Admin chỉ dùng trên server. `.env.local` đã được bỏ qua bởi Git.
+
+### Bước 6 — Chạy và kiểm tra
 
 ```bash
 npm run dev
 ```
 
-Mở [http://localhost:3000](http://localhost:3000). Trang `/test-db` dùng để kiểm tra API đọc sản phẩm mẫu `p1`.
+Mở [http://localhost:3000](http://localhost:3000) và kiểm tra:
 
-## Database và quan hệ
+1. Trang chủ và `/shop` hiển thị sản phẩm mẫu.
+2. `/test-db` đọc được sản phẩm `p1` qua API.
+3. Đăng ký tài khoản tại `/signup`, kiểm tra đăng nhập và đăng xuất.
+4. Thêm sản phẩm vào giỏ, nhập thông tin giao hàng và đặt đơn thử; xem kết quả tại `/orders`.
 
-| Bảng | Vai trò |
-|---|---|
-| `categories` | Một danh mục có nhiều sản phẩm |
-| `products` | Thông tin sản phẩm, giá, trạng thái hiển thị |
-| `product_images` | Nhiều ảnh của một sản phẩm, sắp theo `position` |
-| `product_variants` | Biến thể màu + kích cỡ, tồn kho và trạng thái |
-| `styles` / `product_styles` | Quan hệ nhiều–nhiều giữa sản phẩm và phong cách |
-| `users` | Hồ sơ và quyền website, liên kết Firebase bằng `firebase_uid` |
-| `sessions` | Bảng từ thiết kế xác thực cũ; luồng Firebase hiện không dùng bảng này |
-| `orders` | Đơn của người dùng, trạng thái và thông tin người nhận tại lúc đặt |
-| `order_items` | Snapshot sản phẩm, màu/kích cỡ, đơn giá và số lượng |
+Khi thay đổi `.env.local`, dừng dev server bằng **Ctrl+C** rồi chạy lại `npm run dev`.
 
-Một sản phẩm thuộc một danh mục, có nhiều ảnh/biến thể và nhiều phong cách. Một người dùng có nhiều đơn; mỗi đơn có nhiều dòng chi tiết. Snapshot giữ lịch sử khi sản phẩm thay đổi. Backend tính lại giá, kiểm tra tồn kho, ghi đơn và trừ kho trong transaction; hủy đơn đang chuẩn bị sẽ hoàn kho.
+### Bước 7 — Cấp quyền admin để thử trang quản trị
 
-## Tạo tài khoản admin
-
-1. Đăng ký bằng giao diện `/signup`, đăng nhập để hồ sơ được đồng bộ vào `users`.
-2. Trong Query Tool, thay email mẫu bằng email tài khoản của bạn rồi chạy:
+Đăng ký và đăng nhập tài khoản bằng giao diện để hồ sơ được đồng bộ vào bảng `users`. Trong Query Tool của database `shop_app`, thay email mẫu rồi chạy:
 
 ```sql
--- Cấp quyền cho hồ sơ đã được Firebase xác thực và đồng bộ.
+-- Cấp quyền admin cho hồ sơ đã được Firebase xác thực và đồng bộ.
 UPDATE public.users
 SET role = 'admin', updated_at = CURRENT_TIMESTAMP
 WHERE email = 'your-admin@example.com'
@@ -140,55 +224,19 @@ WHERE email = 'your-admin@example.com'
   AND is_active = true;
 ```
 
-3. Đăng xuất rồi đăng nhập lại. Tài khoản admin được đưa đến `/admin`.
+Đăng xuất rồi đăng nhập lại. Tài khoản admin sẽ được chuyển tới `/admin`. Nếu câu lệnh cập nhật 0 dòng, kiểm tra email và việc đồng bộ hồ sơ vào database.
 
-Dự án không tạo sẵn tài khoản `admin/1234`. API quản trị kiểm tra quyền trong PostgreSQL. Trên giao diện mua sắm, nút thêm giỏ hàng và nút giỏ hàng bị vô hiệu hóa cho admin.
+Dự án không có sẵn tài khoản `admin/1234`. Dùng tài khoản khách hàng riêng để thử luồng mua sắm, vì nút giỏ hàng và thêm vào giỏ bị vô hiệu hóa trên giao diện của admin.
 
-## Dữ liệu đơn mẫu cho biểu đồ
+### Các lệnh kiểm tra và chạy bản build
 
-Sau khi cấu hình `.env.local` và tạo đủ bảng, có thể thêm đơn mẫu trong 30 ngày gần đây:
+| Lệnh                                                 | Mục đích                                           |
+| ---------------------------------------------------- | -------------------------------------------------- |
+| `npm run dev`                                        | Chạy server phát triển                             |
+| `npm run lint`                                       | Kiểm tra quy tắc mã nguồn bằng ESLint              |
+| `npx tsc --noEmit`                                   | Kiểm tra kiểu TypeScript                           |
+| `npm run build`                                      | Tạo bản build production                           |
+| `npm run start`                                      | Chạy bản production local sau khi build thành công |
+| `node --env-file=.env.local --test tests/*.test.mjs` | Chạy bộ kiểm thử                                   |
 
-```bash
-node --env-file=.env.local scripts/seed-demo-orders.mjs
-```
-
-Script tạo hồ sơ mẫu bị khóa, đơn có tiền tố `demo-order-` và chi tiết sản phẩm giả. Các đơn này được tính vào thống kê admin; script không thay đổi tồn kho sản phẩm thật và không tạo trùng ID khi chạy lại trong cùng ngày. Muốn xóa bộ đơn mẫu, chạy [remove-demo-orders.sql](docs/remove-demo-orders.sql).
-
-[localize-catalog.mjs](scripts/localize-catalog.mjs) dành cho database đã seed bằng bộ tên tiếng Anh cũ; seed mới trong `/docs` đã dùng tiếng Việt.
-
-## Cấu trúc dự án
-
-```text
-app/                 Trang Next.js và REST API
-  admin/             Tổng quan, sản phẩm, đơn hàng, tài khoản
-  api/               Catalog, sản phẩm, session, đơn hàng và API admin
-components/          Giao diện sản phẩm, auth, giỏ hàng và admin
-lib/                 Truy vấn SQL, kiểu dữ liệu, Axios, Firebase và logic dùng chung
-docs/                Schema, migration và seed SQL được chia sẻ trong Git
-scripts/             Seed đơn mẫu và chuyển tên catalog cũ sang tiếng Việt
-tests/               Kiểm thử logic, API, session và transaction
-public/              Ảnh và tài nguyên tĩnh
-```
-
-`myDocs/` chứa tài liệu cá nhân, được bỏ qua bởi Git.
-
-## Các lệnh thường dùng
-
-```bash
-npm run dev
-npm run lint
-npm run build
-npm run start
-```
-
-`npm run start` chạy bản production sau khi build. Chạy toàn bộ kiểm thử:
-
-```bash
-node --env-file=.env.local --test tests/*.test.mjs
-```
-
-Kiểm thử PostgreSQL yêu cầu kết nối database hợp lệ. Các bài kiểm thử nghiệp vụ dùng bảng TEMP trên connection riêng, không sửa dữ liệu shop thật.
-
-## Phạm vi hiện tại
-
-Dự án chưa tích hợp cổng thanh toán hoặc quản lý giỏ hàng trên server. Danh sách quản trị tải toàn bộ dữ liệu rồi lọc/phân trang phía client; danh sách shop đã lọc/phân trang tại API. Có thể mở rộng các phần này khi dữ liệu và nhu cầu tăng lên.
+Các kiểm thử PostgreSQL cần kết nối database hợp lệ; kiểm thử nghiệp vụ dùng bảng tạm trên connection riêng, không sửa dữ liệu shop trong các bảng chính.

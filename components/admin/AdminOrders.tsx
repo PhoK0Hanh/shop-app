@@ -3,8 +3,8 @@ import { useRef,useState } from 'react';
 import AdminDialog from './AdminDialog';
 import axios from 'axios';
 import { Search,RefreshCw,X } from 'lucide-react';
-import { api } from '@/lib/api';
 import { useApi } from '@/lib/use-api';
+import { useAdminEnvironment } from './AdminEnvironment';
 import { formatPrice } from '@/lib/catalog';
 import { getColorLabel,getProductNameLabel } from '@/lib/catalog-labels';
 import { orderStatusLabels,type OrderStatus } from '@/lib/order-types';
@@ -35,7 +35,8 @@ function OrderDialog({order,busy,error,onChange,onClose}:{order:AdminOrder;busy:
 }
 
 export default function AdminOrders({initialStatus='',initialFrom='',initialTo='',initialOrderId=''}:{initialStatus?:string;initialFrom?:string;initialTo?:string;initialOrderId?:string}){
-  const catalog=useApi<{orders:AdminOrder[]}>('/admin/orders');
+  const { client: api } = useAdminEnvironment();
+  const catalog=useApi<{orders:AdminOrder[]}>('/admin/orders', api);
   const [search,setSearch]=useState('');const [status,setStatus]=useState(initialStatus);const [page,setPage]=useState(1);const [selected,setSelected]=useState<AdminOrder|null>(null);
   const [from,setFrom]=useState(initialFrom);const [to,setTo]=useState(initialTo);const [initialDialogOpen,setInitialDialogOpen]=useState(Boolean(initialOrderId));
   const [busy,setBusy]=useState(false);const pending=useRef(false);const [error,setError]=useState('');const [message,setMessage]=useState('');

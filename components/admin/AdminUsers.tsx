@@ -2,13 +2,14 @@
 import { useRef,useState } from 'react';
 import axios from 'axios';
 import { Search,RefreshCw,LockKeyhole,LockKeyholeOpen } from 'lucide-react';
-import { api } from '@/lib/api';
 import { useApi } from '@/lib/use-api';
+import { useAdminEnvironment } from './AdminEnvironment';
 import type { AdminUser } from '@/lib/admin-user-types';
 import ApiStatus from '@/components/ApiStatus';
 
 export default function AdminUsers({initialRole='',initialStatus=''}:{initialRole?:string;initialStatus?:string}){
-  const catalog=useApi<{users:AdminUser[];currentUserId:string}>('/admin/users');
+  const { client: api } = useAdminEnvironment();
+  const catalog=useApi<{users:AdminUser[];currentUserId:string}>('/admin/users', api);
   // Nhận bộ lọc từ liên kết thống kê ở trang Tổng quan.
   const [search,setSearch]=useState('');const [role,setRole]=useState(initialRole);const [status,setStatus]=useState(initialStatus);const [page,setPage]=useState(1);
   const [busy,setBusy]=useState(false);const pending=useRef(false);const [error,setError]=useState('');const [message,setMessage]=useState('');
