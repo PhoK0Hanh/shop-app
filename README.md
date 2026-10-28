@@ -54,9 +54,8 @@ Chọn sản phẩm → Giỏ hàng → Đăng nhập → Nhập thông tin giao
 
 Dự án **chưa tích hợp thanh toán trực tuyến**: xác nhận đặt hàng sẽ tạo đơn ngay. Backend tính lại giá và trừ tồn kho trong transaction; hủy đơn đang chuẩn bị sẽ hoàn lại tồn kho.
 
-Giỏ hàng chưa đồng bộ giữa các thiết bị. Một số liên kết ở footer dẫn tới trang minh họa `/test`. Danh sách quản trị lọc/phân trang phía client; danh sách shop lọc/phân trang tại API.
-
 ## 3. Công nghệ sử dụng
+
 
 | Thành phần        | Công nghệ và vai trò                                                                   |
 | ----------------- | -------------------------------------------------------------------------------------- |
