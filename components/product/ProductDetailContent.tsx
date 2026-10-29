@@ -5,6 +5,8 @@ import ProductGallery from "@/components/product/ProductGallery";
 import ProductInfo from "@/components/product/ProductInfo";
 import ProductCard from "@/components/product/ProductCard";
 import ProductDetailsTabs from "@/components/product/ProductDetailsTabs";
+import ProductDetailSkeleton from "@/components/product/ProductDetailSkeleton";
+import ProductCardSkeleton from "@/components/product/ProductCardSkeleton";
 import { useApi } from "@/lib/use-api";
 import ApiStatus from "@/components/ApiStatus";
 import type { Product, Category } from "@/lib/catalog";
@@ -13,6 +15,7 @@ import type { Product, Category } from "@/lib/catalog";
 export default function ProductDetailContent({ id }: { id: string }) {
   const detail = useApi<{product: Product; category: Category | null}>(`/products/${encodeURIComponent(id)}`);
   const suggestions = useApi<Product[]>(`/products/${encodeURIComponent(id)}/suggestions`);
+  if (detail.loading) return <ProductDetailSkeleton />;
   if (!detail.data) return <ApiStatus error={detail.error} retry={detail.retry} />;
   const { product, category } = detail.data;
   const suggestedProducts = suggestions.data ?? [];
@@ -60,17 +63,24 @@ export default function ProductDetailContent({ id }: { id: string }) {
         key={`details-${product.id}`}
         description={product.description}
       />
-      {(suggestions.loading || suggestions.error) && <ApiStatus error={suggestions.error} retry={suggestions.retry} />}
-      {suggestedProducts.length > 0 && (
-        <section className="mt-12 border-t pt-9">
+      {(suggestions.loading || suggestions.error || suggestedProducts.length > 0) && (
+        <section aria-busy={suggestions.loading} className="mt-12 border-t pt-9">
           <h2 className="mb-7 text-center text-3xl font-bold lg:text-5xl">
             CÓ THỂ BẠN CŨNG THÍCH
           </h2>
-          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+          {/* Gợi ý tải độc lập; lỗi có Thử lại, không giữ skeleton khi request thất bại. */}
+          {suggestions.error ? <ApiStatus error={suggestions.error} retry={suggestions.retry} /> : suggestions.loading ? (
+            <div role="status">
+              <span className="sr-only">Đang tải sản phẩm gợi ý...</span>
+              <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+                {Array.from({ length: 4 }, (_, index) => <ProductCardSkeleton key={index} />)}
+              </div>
+            </div>
+          ) : <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
             {suggestedProducts.map((item) => (
               <ProductCard key={item.id} product={item} />
             ))}
-          </div>
+          </div>}
         </section>
       )}
     </div>
